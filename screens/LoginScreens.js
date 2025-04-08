@@ -49,7 +49,7 @@ export default function LoginScreen({ navigation }) {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <Image
-        source={require('../assets/logo.png')}
+        source={require('../assets/ParkerLogo.png')}
         style={{ width: 120, height: 120, alignSelf: 'center', marginBottom: 24 }}
       />
 
