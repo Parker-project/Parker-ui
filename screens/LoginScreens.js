@@ -1,20 +1,37 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  Switch,
+  TouchableOpacity
+} from 'react-native';
+
+import { styles } from '../constants/styles';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleLogin = () => {
     if (email === '' || password === '') {
-      Alert.alert('Error', 'Please enter email and password');
+      setErrorMessage('Please fill in both email and password');
     } else {
+      setErrorMessage('');
       Alert.alert('Success', `Logged in as ${email}`);
     }
   };
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
       <Text style={styles.title}>Login</Text>
 
       <TextInput
@@ -34,28 +51,30 @@ export default function LoginScreen() {
         secureTextEntry={true}
       />
 
-      <Button title="Login" onPress={handleLogin} />
-    </View>
+      {errorMessage !== '' && (
+        <Text style={styles.errorText}>{errorMessage}</Text>
+      )}
+
+      <View style={styles.rememberMeContainer}>
+        <Text style={styles.rememberMeText}>Remember Me</Text>
+        <Switch
+          value={rememberMe}
+          onValueChange={value => setRememberMe(value)}
+        />
+      </View>
+
+      {/* Modern, styled button */}
+      <TouchableOpacity style={styles.button} onPress={handleLogin}>
+        <Text style={styles.buttonText}>Login</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        onPress={() =>
+          Alert.alert("Reset Password", "Redirect to password recovery flow")
+        }
+      >
+        <Text style={styles.linkText}>Forgot Password?</Text>
+      </TouchableOpacity>
+    </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: 16
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 24,
-    textAlign: 'center'
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 16
-  }
-});
