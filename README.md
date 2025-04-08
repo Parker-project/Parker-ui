@@ -1,4 +1,77 @@
-# Welcome to your Expo app 👋
+# 🚗 ParkerApp 🅿️
+
+A mobile app for reporting civil parking violations.  
+Users can upload photos, detect license plates via OCR, and submit geo-tagged reports.  
+The app supports multiple user roles and provides a structured, efficient flow for handling reports.
+
+Built with **React Native** (front-end) and **Express.js** (back-end).
+
+---
+
+## 📱 What Does the App Do?
+
+**ParkerApp** allows users to easily report illegal parking from their phone by:
+
+- Capturing a photo of the violation 📷  
+- Detecting the license plate automatically via OCR 🔍  
+- Choosing the type of violation or entering a custom one ✍️  
+- Capturing the location automatically via GPS 📍  
+- Submitting the report into a tracked system ⏱  
+
+---
+
+## 👥 User Roles
+
+| 🧑 Role            | 🚦 Permissions                                                                 |
+|-------------------|-------------------------------------------------------------------------------|
+| **User**           | Submit reports, view their own report history                                |
+| **Spectator**      | View reports assigned to their authority, update statuses                    |
+| **Super Spectator**| View all reports in system, assign reports to Spectators                     |
+| **Admin**          | Manage users, system settings, data exports, and full access to reports      |
+
+---
+
+## 🚀 Core Features
+
+- 📸 **Report submission with camera or gallery**
+- 🔍 **OCR-based license plate detection** (editable)
+- 📍 **Automatic location tagging**
+- ✍️ **Custom violation types** with free-text option
+- 🧭 **Live report tracking with status updates**
+- 🔐 **Secure login + Google Sign-In**
+- 🧑‍💻 **Role-based dashboards**
+- 📤 **Export capabilities for admins**
+
+---
+
+## ✨ Nice-to-Have Features
+
+- 🧠 Smart form validation
+- 🔔 Real-time push notifications
+- 🌓 Dark mode support
+- 📊 Filtering/sorting of reports
+- 📄 PDF/Excel export support
+- 🎨 Better UI through component libraries
+
+---
+
+## 🛠 Tech Stack
+
+- ⚛️ React Native  
+- 🚀 Express.js  
+- 🗄️ Node.js  
+- 📦 MongoDB or SQL  
+- 📷 OCR (e.g. Tesseract / Google Vision API)
+
+---
+
+## 📦 Installation
+
+```bash
+git clone https://github.com/your-username/ParkerApp.git
+cd ParkerApp
+npm install
+npx expo start
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
@@ -10,7 +83,7 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    npm install
    ```
 
-2. Start the app
+ Start the app
 
    ```bash
     npx expo start
