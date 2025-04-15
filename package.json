@@ -11,7 +11,8 @@
     "react": "18.3.0",
     "react-dom": "18.3.0",
     "react-native": "0.76.4",
-    "react-native-web": "~0.19.6"
+    "react-native-web": "~0.19.6",
+    "react-router-dom": "^7.5.0"
   },
   "private": true,
   "devDependencies": {
