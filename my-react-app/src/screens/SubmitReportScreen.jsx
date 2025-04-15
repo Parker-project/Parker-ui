@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import PageWrapper from '../components/PageWrapper';
 
 export default function SubmitReportScreen() {
   const [licensePlate, setLicensePlate] = useState('');
@@ -7,14 +8,10 @@ export default function SubmitReportScreen() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
     if (!licensePlate.trim()) {
       alert('License plate is required!');
       return;
     }
-
-    // For now, just simulate submission
-    console.log('Report submitted:', { licensePlate, notes });
 
     setSubmitted(true);
     setLicensePlate('');
@@ -22,66 +19,49 @@ export default function SubmitReportScreen() {
   };
 
   return (
-    <div style={styles.container}>
-      <h2>Submit a Parking Violation Report</h2>
+    <PageWrapper>
+      <h2 className="text-2xl font-bold text-center mb-4 text-blue-600">
+        🚗 Submit Parking Violation
+      </h2>
 
-      {submitted && <p style={{ color: 'green' }}>Report submitted successfully!</p>}
+      {submitted && (
+        <p className="text-green-600 text-center mb-4">
+          ✅ Report submitted successfully!
+        </p>
+      )}
 
-      <form onSubmit={handleSubmit} style={styles.form}>
-        <label style={styles.label}>License Plate Number:</label>
-        <input
-          style={styles.input}
-          type="text"
-          value={licensePlate}
-          onChange={(e) => setLicensePlate(e.target.value)}
-          placeholder="e.g., 123-456-78"
-        />
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            License Plate Number
+          </label>
+          <input
+            type="text"
+            value={licensePlate}
+            onChange={(e) => setLicensePlate(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
+          />
+        </div>
 
-        <label style={styles.label}>Additional Notes (optional):</label>
-        <textarea
-          style={{ ...styles.input, height: '80px' }}
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          placeholder="e.g., Blocking a driveway..."
-        />
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Additional Notes
+          </label>
+          <textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
+            rows="3"
+          />
+        </div>
 
-        <button type="submit" style={styles.button}>
+        <button
+          type="submit"
+          className="bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition"
+        >
           Submit Report
         </button>
       </form>
-    </div>
+    </PageWrapper>
   );
 }
-
-const styles = {
-  container: {
-    maxWidth: '500px',
-    margin: '3rem auto',
-    padding: '2rem',
-    border: '1px solid #ccc',
-    borderRadius: '12px',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-    fontFamily: 'sans-serif',
-  },
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '1rem',
-  },
-  label: {
-    fontWeight: 'bold',
-  },
-  input: {
-    padding: '0.6rem',
-    fontSize: '1rem',
-  },
-  button: {
-    backgroundColor: '#007bff',
-    color: 'white',
-    padding: '0.75rem',
-    fontSize: '1rem',
-    border: 'none',
-    borderRadius: '6px',
-    cursor: 'pointer',
-  },
-};
