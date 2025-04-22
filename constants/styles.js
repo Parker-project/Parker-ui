@@ -100,5 +100,50 @@ export const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 2,
     marginBottom: 16,
+  },
+
+  imageContainer: {
+    width: '100%',
+    height: 300,
+    borderRadius: 12,
+    overflow: 'hidden',
+    backgroundColor: colors.lightGray,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  imagePreview: {
+    width: '100%',
+    height: '100%',
+  },
+  placeholder: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  placeholderText: {
+    color: colors.gray,
+    fontSize: 16,
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 16,
+  },
+  primaryButton: {
+    flex: 1,
+    marginRight: 4,
+  },
+  secondaryButton: {
+    backgroundColor: colors.gray,
+    flex: 1,
+    marginRight: 4,
+  },
+  cancelButton: {
+    backgroundColor: colors.error,
+    flex: 1,
+    marginHorizontal: 4,
+  },
+  submitButton: {
+    flex: 1,
+    marginLeft: 4,
   }
 });

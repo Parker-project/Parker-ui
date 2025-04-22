@@ -1,6 +1,10 @@
 import React from 'react';
-import LoginScreens from '../screens/LoginScreens';
+import LoginScreen from '../screens/LoginScreens';
+import ReportSubmissionScreen from '../screens/ReportScreen';
 
 export default function App() {
-  return <LoginScreens />;
+  const DEV_PREVIEW = true;  // flip this to false to go back to login
+  return DEV_PREVIEW
+    ? <ReportSubmissionScreen />
+    : <LoginScreen />;
 }
