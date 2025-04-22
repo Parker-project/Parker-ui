@@ -1,61 +1,81 @@
 import { useState } from 'react';
-import './SignupScreen.css'; // optional if you want external styling
+import './SignupScreen.css'; // keep if you have styling
 
 export default function SignupScreen() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: ''
+  });
+
   const [errorMessage, setErrorMessage] = useState('');
 
-  const handleLogin = () => {
-    if (email === '' || password === '') {
-      setErrorMessage('Please fill in both email and password');
-    } else {
-      setErrorMessage('');
-      window.alert(`Logged in as ${email}`);
+  const handleChange = (e) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const { firstName, lastName, email, password } = formData;
+
+    if (!firstName || !lastName || !email || !password) {
+      setErrorMessage('Please fill in all fields');
+      return;
     }
+
+    setErrorMessage('');
+    console.log('Signing up with:', formData); // next step: send to backend
   };
 
   return (
     <div className="form-container">
-      <h2>Login</h2>
+      <h2>Create an Account</h2>
 
-      <input
-        className="form-input"
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
+      <form onSubmit={handleSubmit}>
+        <input
+          className="form-input"
+          type="text"
+          name="firstName"
+          placeholder="First Name"
+          value={formData.firstName}
+          onChange={handleChange}
+        />
+        <input
+          className="form-input"
+          type="text"
+          name="lastName"
+          placeholder="Last Name"
+          value={formData.lastName}
+          onChange={handleChange}
+        />
+        <input
+          className="form-input"
+          type="email"
+          name="email"
+          placeholder="Email"
+          value={formData.email}
+          onChange={handleChange}
+        />
+        <input
+          className="form-input"
+          type="password"
+          name="password"
+          placeholder="Password"
+          value={formData.password}
+          onChange={handleChange}
+        />
 
-      <input
-        className="form-input"
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
+        {errorMessage && <p className="error-text">{errorMessage}</p>}
 
-      {errorMessage && <p className="error-text">{errorMessage}</p>}
-
-      <div className="remember-me">
-        <label>
-          <input
-            type="checkbox"
-            checked={rememberMe}
-            onChange={(e) => setRememberMe(e.target.checked)}
-          />
-          Remember Me
-        </label>
-      </div>
-
-      <button className="form-button" onClick={handleLogin}>
-        Login
-      </button>
-
-      <p className="link-text" onClick={() => window.alert("Redirect to password recovery flow")}>
-        Forgot Password?
-      </p>
+        <button className="form-button" type="submit">
+          Sign Up
+        </button>
+      </form>
     </div>
   );
 }
