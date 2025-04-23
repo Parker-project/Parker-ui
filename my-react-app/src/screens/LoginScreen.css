@@ -43,3 +43,9 @@
     margin-top: 0.5rem;
   }
   
+  .report-card {
+    border: 1px solid #ccc;
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+  }
