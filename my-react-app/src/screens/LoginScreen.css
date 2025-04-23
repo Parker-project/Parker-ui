@@ -1,0 +1,51 @@
+.form-container {
+    max-width: 400px;
+    margin: 3rem auto;
+    padding: 2rem;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    font-family: sans-serif;
+  }
+  
+  .form-input {
+    width: 100%;
+    padding: 0.6rem;
+    margin: 0.5rem 0;
+    font-size: 1rem;
+  }
+  
+  .form-button {
+    width: 100%;
+    padding: 0.75rem;
+    margin-top: 1rem;
+    font-size: 1rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  .error-text {
+    color: red;
+    font-size: 0.9rem;
+  }
+  
+  .link-text {
+    color: #007bff;
+    text-align: center;
+    margin-top: 1rem;
+    cursor: pointer;
+  }
+  
+  .remember-me {
+    margin-top: 0.5rem;
+  }
+  
+  .report-card {
+    border: 1px solid #ccc;
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+  }
