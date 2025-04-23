@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import './SignupScreen.css'; // keep if you have styling
+import './SignupScreen.css'; // optional styling file
 
 export default function SignupScreen() {
   const [formData, setFormData] = useState({
@@ -10,17 +10,19 @@ export default function SignupScreen() {
   });
 
   const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
-    setFormData(prev => ({
+    const { name, value } = e.target;
+    setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value
+      [name]: value
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
     const { firstName, lastName, email, password } = formData;
 
     if (!firstName || !lastName || !email || !password) {
@@ -28,8 +30,20 @@ export default function SignupScreen() {
       return;
     }
 
+    setIsSubmitting(true);
     setErrorMessage('');
-    console.log('Signing up with:', formData); // next step: send to backend
+    setSuccessMessage('');
+
+    // Simulated API behavior (mock)
+    setTimeout(() => {
+      if (email === 'taken@example.com') {
+        setErrorMessage('Email address is already in use');
+      } else {
+        setSuccessMessage('Verification email sent! Check your inbox.');
+        setFormData({ firstName: '', lastName: '', email: '', password: '' });
+      }
+      setIsSubmitting(false);
+    }, 1200);
   };
 
   return (
@@ -70,12 +84,13 @@ export default function SignupScreen() {
           onChange={handleChange}
         />
 
-        {errorMessage && <p className="error-text">{errorMessage}</p>}
-
-        <button className="form-button" type="submit">
-          Sign Up
+        <button className="form-button" type="submit" disabled={isSubmitting}>
+          {isSubmitting ? 'Signing Up...' : 'Sign Up'}
         </button>
       </form>
+
+      {errorMessage && <p className="error-text">{errorMessage}</p>}
+      {successMessage && <p className="success-text">{successMessage}</p>}
     </div>
   );
 }
