@@ -5,6 +5,15 @@ export default function SubmitReportScreen() {
   const [licensePlate, setLicensePlate] = useState('');
   const [notes, setNotes] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [imageUri, setImageUri] = useState(null);
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setImageUri(imageUrl);
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -16,6 +25,7 @@ export default function SubmitReportScreen() {
     setSubmitted(true);
     setLicensePlate('');
     setNotes('');
+    setImageUri(null);
   };
 
   return (
@@ -31,6 +41,7 @@ export default function SubmitReportScreen() {
       )}
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             License Plate Number
@@ -54,6 +65,28 @@ export default function SubmitReportScreen() {
             rows="3"
           />
         </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Upload Photo
+          </label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="w-full"
+          />
+        </div>
+
+        {imageUri && (
+          <div className="flex justify-center my-4">
+            <img
+              src={imageUri}
+              alt="Uploaded Preview"
+              className="w-48 h-48 object-cover rounded-lg"
+            />
+          </div>
+        )}
 
         <button
           type="submit"
