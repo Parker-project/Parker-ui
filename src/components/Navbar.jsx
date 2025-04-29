@@ -14,7 +14,7 @@ export default function Navbar() {
         <Link style={styles.link} to="/">Home</Link>
         <Link style={styles.link} to="/login">Login</Link>
         <Link style={styles.link} to="/signup">Sign Up</Link>
-        <Link style={styles.link} to="/dashboard">Dashboard</Link>
+        <Link style={styles.link} to="/inspector">Inspector Dashboard</Link>
         <Link style={styles.link} to="/submit">Submit Report</Link>
       </div>
       <div>

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import './SignupScreen.css'; // optional styling file
+import PageWrapper from '../components/PageWrapper';
 
 export default function SignupScreen() {
   const [formData, setFormData] = useState({
@@ -47,50 +47,54 @@ export default function SignupScreen() {
   };
 
   return (
-    <div className="form-container">
-      <h2>Create an Account</h2>
+    <PageWrapper>
+      <div className="page-container">
+        <h2>Create an Account</h2>
 
-      <form onSubmit={handleSubmit}>
-        <input
-          className="form-input"
-          type="text"
-          name="firstName"
-          placeholder="First Name"
-          value={formData.firstName}
-          onChange={handleChange}
-        />
-        <input
-          className="form-input"
-          type="text"
-          name="lastName"
-          placeholder="Last Name"
-          value={formData.lastName}
-          onChange={handleChange}
-        />
-        <input
-          className="form-input"
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={formData.email}
-          onChange={handleChange}
-        />
-        <input
-          className="form-input"
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={formData.password}
-          onChange={handleChange}
-        />
+        <form onSubmit={handleSubmit}>
+          <input
+            className="input-field"
+            type="text"
+            name="firstName"
+            placeholder="First Name"
+            value={formData.firstName}
+            onChange={handleChange}
+          />
+          <input
+            className="input-field"
+            type="text"
+            name="lastName"
+            placeholder="Last Name"
+            value={formData.lastName}
+            onChange={handleChange}
+          />
+          <input
+            className="input-field"
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={formData.email}
+            onChange={handleChange}
+          />
+          <input
+            className="input-field"
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={formData.password}
+            onChange={handleChange}
+          />
 
-        <button className="form-button" type="submit" disabled={isSubmitting}>
-          {isSubmitting ? 'Signing Up...' : 'Sign Up'}
-        </button>
-      </form>
+          <button className="primary-button" type="submit" disabled={isSubmitting}>
+            {isSubmitting ? 'Signing Up...' : 'Sign Up'}
+          </button>
+        </form>
 
-      {errorMessage && <p className="error-text">{errorMessage}</p>}
-      {successMessage && <p className="success-text">{successMessage}</p>}
-    </div>
+        {errorMessage && <p className="error-message">{errorMessage}</p>}
+        {successMessage && <p style={{ color: 'green', textAlign: 'center', marginTop: '10px' }}>
+          {successMessage}
+        </p>}
+      </div>
+    </PageWrapper>
   );
 }
