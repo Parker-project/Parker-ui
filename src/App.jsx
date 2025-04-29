@@ -25,14 +25,14 @@ function App() {
 
   return (
     <Router>
-      <Navbar user={user} />
+      <Navbar user={user} setUser={setUser} />
       <PageWrapper>
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<h2>Landing Page</h2>} />
           <Route path="/signup" element={<SignupScreen />} />
           <Route path="/login" element={<LoginScreen setUser={setUser} />} />
-          <Route path="/submit" element={<SubmitReportScreen />} />
+          <Route path="/submit-report" element={<SubmitReportScreen />} />
           <Route path="/verify-email" element={<VerifyEmailScreen />} />
           <Route path="/resend-verification" element={<ResendVerificationScreen />} />
 

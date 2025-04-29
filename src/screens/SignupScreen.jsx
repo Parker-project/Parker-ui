@@ -1,99 +1,113 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import PageWrapper from '../components/PageWrapper';
-
-export default function SignupScreen() {
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: ''
-  });
-
-  const [errorMessage, setErrorMessage] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+import { API_BASE_URL } from '../constants/api';
+export default function SignupScreen({ setUser }) {
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { firstName, lastName, email, password } = formData;
-
-    if (!firstName || !lastName || !email || !password) {
-      setErrorMessage('Please fill in all fields');
-      return;
-    }
-
-    setIsSubmitting(true);
-    setErrorMessage('');
-    setSuccessMessage('');
-
-    // Simulated API behavior (mock)
-    setTimeout(() => {
-      if (email === 'taken@example.com') {
-        setErrorMessage('Email address is already in use');
+    setError('');
+  
+    try {
+      const res = await fetch(`${API_BASE_URL}/signup`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          firstName,
+          lastName,
+          email,
+          password,
+        }),
+      });
+      
+  
+      if (res.ok) {
+        // Only try reading body if needed, otherwise just navigate
+        try {
+          const text = await res.text();
+          if (text) {
+            const data = JSON.parse(text);
+            if (data && data.token) {
+              localStorage.setItem('user', JSON.stringify(data));
+              setUser(data);
+            }
+          }
+        } catch (parseError) {
+          console.warn('No usable JSON body, but signup succeeded');
+        }
+  
+        navigate('/submit-report');
       } else {
-        setSuccessMessage('Verification email sent! Check your inbox.');
-        setFormData({ firstName: '', lastName: '', email: '', password: '' });
+        let errorMessage = 'Signup failed';
+        try {
+          const text = await res.text();
+          const data = text ? JSON.parse(text) : {};
+          if (data.message) {
+            errorMessage = data.message;
+          }
+        } catch (err) {
+          console.warn('Error reading error message');
+        }
+        setError(errorMessage);
       }
-      setIsSubmitting(false);
-    }, 1200);
-  };
+    } catch (err) {
+      console.error('Signup failed:', err);
+      setError('Something went wrong. Please try again.');
+    }
+  };  
 
   return (
     <PageWrapper>
       <div className="page-container">
-        <h2>Create an Account</h2>
+        <h2>Sign Up</h2>
+
+        {error && <p className="error-message">{error}</p>}
 
         <form onSubmit={handleSubmit}>
           <input
             className="input-field"
             type="text"
-            name="firstName"
             placeholder="First Name"
-            value={formData.firstName}
-            onChange={handleChange}
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            required
           />
           <input
             className="input-field"
             type="text"
-            name="lastName"
             placeholder="Last Name"
-            value={formData.lastName}
-            onChange={handleChange}
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            required
           />
           <input
             className="input-field"
             type="email"
-            name="email"
             placeholder="Email"
-            value={formData.email}
-            onChange={handleChange}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
           />
           <input
             className="input-field"
             type="password"
-            name="password"
             placeholder="Password"
-            value={formData.password}
-            onChange={handleChange}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
           />
-
-          <button className="primary-button" type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Signing Up...' : 'Sign Up'}
+          <button className="primary-button" type="submit">
+            Sign Up
           </button>
         </form>
-
-        {errorMessage && <p className="error-message">{errorMessage}</p>}
-        {successMessage && <p style={{ color: 'green', textAlign: 'center', marginTop: '10px' }}>
-          {successMessage}
-        </p>}
       </div>
     </PageWrapper>
   );

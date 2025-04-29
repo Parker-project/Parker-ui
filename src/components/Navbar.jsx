@@ -1,24 +1,39 @@
 import { Link, useNavigate } from 'react-router-dom';
 
-export default function Navbar() {
+export default function Navbar({ user, setUser }) {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    window.alert('Logged out!');
-    navigate('/');
+    localStorage.removeItem('user'); // Really clear it
+    setUser(null); // Update App.jsx that no user is logged in
+    navigate('/login');
   };
 
   return (
     <nav style={styles.navbar}>
       <div style={styles.navLeft}>
         <Link style={styles.link} to="/">Home</Link>
-        <Link style={styles.link} to="/login">Login</Link>
-        <Link style={styles.link} to="/signup">Sign Up</Link>
-        <Link style={styles.link} to="/inspector">Inspector Dashboard</Link>
-        <Link style={styles.link} to="/submit">Submit Report</Link>
+        {!user && (
+          <>
+            <Link style={styles.link} to="/login">Login</Link>
+            <Link style={styles.link} to="/signup">Sign Up</Link>
+          </>
+        )}
+        {user && (
+          <>
+            <Link style={styles.link} to="/submit-report">Submit Report</Link>
+            {user.role === 'inspector' && (
+              <Link style={styles.link} to="/inspector">Inspector Dashboard</Link>
+            )}
+            {/* You can add Admin dashboard link if needed */}
+          </>
+        )}
       </div>
+
       <div>
-        <button onClick={handleLogout} style={styles.logoutBtn}>Logout</button>
+        {user && (
+          <button onClick={handleLogout} style={styles.logoutBtn}>Logout</button>
+        )}
       </div>
     </nav>
   );
