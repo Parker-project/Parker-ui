@@ -12,6 +12,8 @@ import RequireInspector from './components/RequireInspector';
 import LogoutButton from './components/LogoutButton';
 import ReportDetail from './screens/ReportDetail';
 import InspectorDashboardScreen from './screens/InspectorDashboardScreen';
+import LandingPage from './screens/LandingPage';
+
 
 function App() {
   const [user, setUser] = useState(null);
@@ -29,7 +31,7 @@ function App() {
       <PageWrapper>
         <Routes>
           {/* Public Routes */}
-          <Route path="/" element={<h2>Landing Page</h2>} />
+          <Route path="/" element={<LandingPage user={user} />} />
           <Route path="/signup" element={<SignupScreen />} />
           <Route path="/login" element={<LoginScreen setUser={setUser} />} />
           <Route path="/submit-report" element={<SubmitReportScreen />} />
