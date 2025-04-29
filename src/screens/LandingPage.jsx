@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import PageWrapper from '../components/PageWrapper';
+import parkingIcon from '../assets/parking-icon.png'; // <-- Make sure you have an icon here!
 
 export default function LandingPage({ user }) {
   const navigate = useNavigate();
@@ -10,32 +11,45 @@ export default function LandingPage({ user }) {
         className="page-container"
         style={{
           textAlign: 'center',
-          padding: '2rem',
+          padding: '2rem 1rem',
+          maxWidth: '500px',
+          margin: '0 auto',
+          animation: 'fadeIn 1s ease',
         }}
       >
-        <h1 style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>
-          Welcome to <span style={{ color: '#007bff' }}>Parker App 🅿️</span>
-        </h1>
 
-        <p style={{ fontSize: '1.2rem', marginBottom: '3rem', color: '#555' }}>
+      {/* Visual element */}
+        <img
+          src={parkingIcon}
+          alt="Parking Icon"
+          style={{ width: '250px', margin: '1rem auto 2rem', display: 'block' }}
+        />
+
+        <p style={{ fontSize: '1.4rem', marginBottom: '3rem', color: '#555' }}>
           Helping keep parking organized, clean, and efficient.
         </p>
 
         {!user && (
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center' }}>
             <button
               className="primary-button"
               onClick={() => navigate('/login')}
               style={{
                 backgroundColor: '#007bff',
                 border: 'none',
-                padding: '0.8rem 1.5rem',
-                borderRadius: '8px',
-                fontSize: '1rem',
+                padding: '1rem 2rem',
+                borderRadius: '12px',
+                fontSize: '1.4rem',
                 color: 'white',
                 cursor: 'pointer',
-                boxShadow: '0px 4px 10px rgba(0,0,0,0.1)'
+                width: '100%',
+                maxWidth: '300px',
+                boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
+                transition: 'transform 0.1s ease',
               }}
+              onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.97)')}
+              onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+              onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
             >
               Login
             </button>
@@ -45,13 +59,19 @@ export default function LandingPage({ user }) {
               style={{
                 backgroundColor: '#28a745',
                 border: 'none',
-                padding: '0.8rem 1.5rem',
-                borderRadius: '8px',
-                fontSize: '1rem',
+                padding: '1rem 2rem',
+                borderRadius: '12px',
+                fontSize: '1.4rem',
                 color: 'white',
                 cursor: 'pointer',
-                boxShadow: '0px 4px 10px rgba(0,0,0,0.1)'
+                width: '100%',
+                maxWidth: '300px',
+                boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
+                transition: 'transform 0.1s ease',
               }}
+              onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.97)')}
+              onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+              onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
             >
               Sign Up
             </button>
@@ -59,8 +79,8 @@ export default function LandingPage({ user }) {
         )}
 
         {user && (
-          <div>
-            <h3 style={{ marginBottom: '2rem', fontSize: '1.5rem', color: '#333' }}>
+          <div style={{ marginTop: '2rem' }}>
+            <h3 style={{ marginBottom: '2rem', fontSize: '2rem', color: '#333', fontWeight: '600' }}>
               Hello, {user.firstName}!
             </h3>
             <button
@@ -69,19 +89,39 @@ export default function LandingPage({ user }) {
               style={{
                 backgroundColor: '#007bff',
                 border: 'none',
-                padding: '0.8rem 1.5rem',
-                borderRadius: '8px',
-                fontSize: '1rem',
+                padding: '1rem 2rem',
+                borderRadius: '12px',
+                fontSize: '1.4rem',
                 color: 'white',
                 cursor: 'pointer',
-                boxShadow: '0px 4px 10px rgba(0,0,0,0.1)'
+                width: '100%',
+                maxWidth: '300px',
+                boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
+                transition: 'transform 0.1s ease',
               }}
+              onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.97)')}
+              onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+              onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
             >
               Submit a Report
             </button>
           </div>
         )}
       </div>
+
+      {/* Add global CSS inside your CSS file */}
+      <style>
+        {`
+          body {
+            background-color: #f8f9fa;
+          }
+          
+          @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+          }
+        `}
+      </style>
     </PageWrapper>
   );
 }
