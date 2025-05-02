@@ -12,19 +12,23 @@ import RequireInspector from './components/RequireInspector';
 import LogoutButton from './components/LogoutButton';
 import ReportDetail from './screens/ReportDetail';
 import InspectorDashboardScreen from './screens/InspectorDashboardScreen';
+import InspectorDashboard from './screens/InspectorDashboard';
 import LandingPage from './screens/LandingPage';
 
 
 function App() {
   const [user, setUser] = useState(null);
+  try {
+    useEffect(() => {
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      }
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-  }, []);
-
+    }, [])
+  } catch {
+    localStorage.removeItem('user');
+  }
   return (
     <Router>
       <Navbar user={user} setUser={setUser} />
@@ -37,6 +41,7 @@ function App() {
           <Route path="/submit-report" element={<SubmitReportScreen />} />
           <Route path="/verify-email" element={<VerifyEmailScreen />} />
           <Route path="/resend-verification" element={<ResendVerificationScreen />} />
+          <Route path="/inspector" element={<InspectorDashboard />} />
 
           {/* Protected Routes */}
           <Route
@@ -72,14 +77,14 @@ function App() {
             }
           />
 
-          <Route
+          {/* <Route // Needs to fix the inspector dashboard permissions
             path="/inspector"
             element={
               <RequireInspector user={user}>
-                <InspectorDashboardScreen />
+                <InspectorDashboard />
               </RequireInspector>
             }
-          />
+          /> */}
 
           {/* Fallback Route */}
           <Route path="*" element={<h2>404 - Page Not Found</h2>} />

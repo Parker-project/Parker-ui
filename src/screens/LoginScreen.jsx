@@ -3,6 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import PageWrapper from '../components/PageWrapper';
 import { API_BASE_URL } from '../constants/api';
 
+
+const INSPECTOR_CREDENTIALS = {
+  email: 'inspector@example.com',
+  password: '123456',
+  rememberMe: true
+};
+
+
 export default function LoginScreen({ setUser }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -12,6 +20,20 @@ export default function LoginScreen({ setUser }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    if (
+      import.meta.env.DEV &&
+      email === INSPECTOR_CREDENTIALS.email &&
+      password === INSPECTOR_CREDENTIALS.password
+    ) {
+      localStorage.setItem(
+        'user',
+        JSON.stringify(INSPECTOR_CREDENTIALS.user)
+      );
+      setUser(INSPECTOR_CREDENTIALS.user);
+      navigate('/submit-report');
+      return;
+    }
 
     try {
       const res = await fetch(`${API_BASE_URL}/login`, {
