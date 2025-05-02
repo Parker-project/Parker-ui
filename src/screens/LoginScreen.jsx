@@ -4,58 +4,39 @@ import PageWrapper from '../components/PageWrapper';
 import { API_BASE_URL } from '../constants/api';
 
 export default function LoginScreen({ setUser }) {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState('');
-  const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
 
     try {
       const res = await fetch(`${API_BASE_URL}/login`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email,
-          password,
-          rememberMe: true, // Optional: for Alon's backend "remember me" feature
-        }),
-        credentials: 'include', // Important: allow cookies (access_token)
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, rememberMe })
       });
 
-      let data = {};
+      const data = await res.json();
 
-      try {
-        const text = await res.text();
-        data = text ? JSON.parse(text) : {};
-      } catch (parseError) {
-        console.warn('No usable JSON body, but login succeeded');
-      }
-
-      if (!res.ok) {
-        let errorMessage = 'Login failed';
-        if (data && data.message) {
-          errorMessage = data.message;
-        }
-        setError(errorMessage);
-        return;
-      }
-
-      if (data && data.user) {
-        localStorage.setItem('user', JSON.stringify(data.user));
-        setUser(data.user);
-      } else if (data && data.token) {
+      if (res.ok) {
         localStorage.setItem('user', JSON.stringify(data));
         setUser(data);
-      }
 
-      navigate('/submit-report');
+        if (data.user?.verified) {
+          navigate('/dashboard');
+        } else {
+          navigate('/verify-email');
+        }
+      } else {
+        setError(data.message || 'Login failed');
+      }
     } catch (err) {
-      console.error('Login failed:', err);
+      console.error('Login error:', err);
       setError('Something went wrong. Please try again.');
     }
   };
@@ -64,10 +45,9 @@ export default function LoginScreen({ setUser }) {
     <PageWrapper>
       <div className="page-container">
         <h2>Login</h2>
-
         {error && <p className="error-message">{error}</p>}
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleLogin}>
           <input
             className="input-field"
             type="email"
@@ -84,6 +64,16 @@ export default function LoginScreen({ setUser }) {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
+
+          <label className="checkbox-label">
+            <input
+              type="checkbox"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+            />
+            Remember Me
+          </label>
+
           <button className="primary-button" type="submit">
             Login
           </button>

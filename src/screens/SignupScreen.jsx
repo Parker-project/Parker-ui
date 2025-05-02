@@ -44,7 +44,7 @@ export default function SignupScreen({ setUser }) {
           console.warn('No usable JSON body, but signup succeeded');
         }
   
-        navigate('/submit-report');
+        navigate('/verify-email');
       } else {
         let errorMessage = 'Signup failed';
         try {
