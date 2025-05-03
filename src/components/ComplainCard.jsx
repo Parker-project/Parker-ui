@@ -1,4 +1,4 @@
-import './ComplainCard.css';
+import '../screens/ComplainListScreen.css';
 
 const ComplainCard = ({ violation }) => {
   const {
@@ -35,11 +35,12 @@ const ComplainCard = ({ violation }) => {
 
         <div className="card-location">
           <i className="fa-solid fa-location-dot"></i> {location}
-        </div>
-
+        </div >
+        <div className="card-button-wrapper">
         <a href={`/violation/${id}`} className="card-button">
           View Report
         </a>
+        </div>
       </div>
     </div>
   );

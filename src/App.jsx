@@ -15,6 +15,7 @@ import ReportDetail from './screens/ReportDetail';
 import InspectorDashboardScreen from './screens/InspectorDashboardScreen';
 import LandingPage from './screens/LandingPage';
 import MyReportsScreen from './screens/MyReportsScreen'; // ✅ ADDED
+import ComplainListScreen from './screens/ComplainListScreen'; // ✅ ADDED
 
 function AppContent() {
   const [user, setUser] = useState(null);
@@ -93,6 +94,15 @@ function AppContent() {
               <RequireInspector user={user}>
                 <InspectorDashboardScreen />
               </RequireInspector>
+            }
+          />
+
+          <Route
+            path="/complain-list"
+            element={
+              <RequireAuth user={user}>
+                <ComplainListScreen />
+              </RequireAuth>
             }
           />
 
