@@ -1,0 +1,152 @@
+[
+    {
+      "id": "1",
+      "title": "Parking Ticket",
+      "type": "Unauthorized Parking",
+      "description": "The car was parked on the sidewalk.",
+      "location": "Boston, MA",
+      "carPlate": "12-3456-78",
+      "photo": "https://example.com/photo1.jpg",
+      "reporter": {
+        "name": "NewTek Solutions",
+        "id": "305305305",
+        "contactEmail": "contact@teksolutions.com",
+        "contactPhone": "555-555-5555"
+      }
+    },
+    {
+      "id": "2",
+      "title": "Double Parking Violation",
+      "type": "Double Parking",
+      "description": "Vehicle was double parked in a busy downtown street.",
+      "location": "New York, NY",
+      "carPlate": "NY-9987-ZX",
+      "photo": "https://example.com/photo2.jpg",
+      "reporter": {
+        "name": "Urban Watch",
+        "id": "402101402",
+        "contactEmail": "info@urbanwatch.org",
+        "contactPhone": "555-777-1234"
+      }
+    },
+    {
+      "id": "3",
+      "title": "Blocking Driveway",
+      "type": "Obstruction",
+      "description": "Car blocked a private residential driveway.",
+      "location": "Los Angeles, CA",
+      "carPlate": "CA-1102-BB",
+      "photo": "https://example.com/photo3.jpg",
+      "reporter": {
+        "name": "LA Block Watch",
+        "id": "508203508",
+        "contactEmail": "report@lablockwatch.net",
+        "contactPhone": "555-888-7890"
+      }
+    },
+    {
+      "id": "4",
+      "title": "Expired Meter Violation",
+      "type": "Meter Violation",
+      "description": "The vehicle remained at an expired parking meter.",
+      "location": "Chicago, IL",
+      "carPlate": "IL-4321-ZA",
+      "photo": "https://example.com/photo4.jpg",
+      "reporter": {
+        "name": "ChiCity Enforcement",
+        "id": "101303101",
+        "contactEmail": "tickets@chicity.gov",
+        "contactPhone": "555-321-4567"
+      }
+    },
+    {
+      "id": "5",
+      "title": "Handicap Zone Violation",
+      "type": "Restricted Zone",
+      "description": "Car parked in a handicap zone without a permit.",
+      "location": "Austin, TX",
+      "carPlate": "TX-8765-LM",
+      "photo": "https://example.com/photo5.jpg",
+      "reporter": {
+        "name": "Mobility First",
+        "id": "909000909",
+        "contactEmail": "support@mobilityfirst.org",
+        "contactPhone": "555-654-9876"
+      }
+    },
+    {
+      "id": "6",
+      "title": "Fire Lane Parking",
+      "type": "Emergency Access Block",
+      "description": "The car was parked in a fire lane.",
+      "location": "Phoenix, AZ",
+      "carPlate": "AZ-2233-XD",
+      "photo": "https://example.com/photo6.jpg",
+      "reporter": {
+        "name": "SafeZone Initiative",
+        "id": "704408704",
+        "contactEmail": "report@safezone.org",
+        "contactPhone": "555-999-2222"
+      }
+    },
+    {
+      "id": "7",
+      "title": "No Parking Zone",
+      "type": "Unauthorized Zone",
+      "description": "Vehicle was parked in a designated 'No Parking' zone.",
+      "location": "Seattle, WA",
+      "carPlate": "WA-1122-QR",
+      "photo": "https://example.com/photo7.jpg",
+      "reporter": {
+        "name": "Seattle Street Patrol",
+        "id": "605607605",
+        "contactEmail": "alerts@ssp.com",
+        "contactPhone": "555-303-4040"
+      }
+    },
+    {
+      "id": "8",
+      "title": "Overtime Parking",
+      "type": "Time Limit Violation",
+      "description": "Car exceeded the posted parking time limit.",
+      "location": "Denver, CO",
+      "carPlate": "CO-7890-PP",
+      "photo": "https://example.com/photo8.jpg",
+      "reporter": {
+        "name": "Mile High Watch",
+        "id": "808101808",
+        "contactEmail": "tickets@milehighwatch.com",
+        "contactPhone": "555-414-5151"
+      }
+    },
+    {
+      "id": "9",
+      "title": "Crosswalk Blockage",
+      "type": "Pedestrian Obstruction",
+      "description": "Car was partially blocking a marked crosswalk.",
+      "location": "Portland, OR",
+      "carPlate": "OR-2233-WW",
+      "photo": "https://example.com/photo9.jpg",
+      "reporter": {
+        "name": "GreenPath Observers",
+        "id": "102010102",
+        "contactEmail": "alerts@greenpath.org",
+        "contactPhone": "555-616-2727"
+      }
+    },
+    {
+      "id": "10",
+      "title": "School Zone Violation",
+      "type": "Restricted Area",
+      "description": "Car parked in a school zone during restricted hours.",
+      "location": "Atlanta, GA",
+      "carPlate": "GA-5566-TT",
+      "photo": "https://example.com/photo10.jpg",
+      "reporter": {
+        "name": "Safe Kids Patrol",
+        "id": "303303303",
+        "contactEmail": "safety@safekids.org",
+        "contactPhone": "555-727-8383"
+      }
+    }
+]
