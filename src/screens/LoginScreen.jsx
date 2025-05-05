@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PageWrapper from '../components/PageWrapper';
-import { API_BASE_URL } from '../constants/api';
+import { login } from '../utils/api';
 
 export default function LoginScreen({ setUser }) {
   const navigate = useNavigate();
@@ -9,35 +9,38 @@ export default function LoginScreen({ setUser }) {
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
+    setIsLoading(true);
 
     try {
-      const res = await fetch(`${API_BASE_URL}/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, rememberMe })
-      });
+      const data = await login(email, password, rememberMe);
+      setUser(data);
 
-      const data = await res.json();
-
-      if (res.ok) {
-        localStorage.setItem('user', JSON.stringify(data));
-        setUser(data);
-
-        if (data.user?.verified) {
+      // Check for sanitizedUser which is how the backend returns the user data
+      const userData = data.sanitizedUser || data.user || {};
+      
+      if (userData.isEmailVerified) {
+        // Add a small delay before redirecting
+        setTimeout(() => {
           navigate('/dashboard');
-        } else {
-          navigate('/verify-email');
-        }
+        }, 1000);
       } else {
-        setError(data.message || 'Login failed');
+        // Redirect to email verification page
+        setError('Please verify your email before logging in.');
+        setTimeout(() => {
+          navigate('/email-not-verified');
+        }, 2000);
+        return;
       }
     } catch (err) {
       console.error('Login error:', err);
-      setError('Something went wrong. Please try again.');
+      setError(err.message || 'Something went wrong. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -55,6 +58,7 @@ export default function LoginScreen({ setUser }) {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            disabled={isLoading}
           />
           <input
             className="input-field"
@@ -63,6 +67,7 @@ export default function LoginScreen({ setUser }) {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            disabled={isLoading}
           />
 
           <label className="checkbox-label">
@@ -70,12 +75,17 @@ export default function LoginScreen({ setUser }) {
               type="checkbox"
               checked={rememberMe}
               onChange={(e) => setRememberMe(e.target.checked)}
+              disabled={isLoading}
             />
             Remember Me
           </label>
 
-          <button className="primary-button" type="submit">
-            Login
+          <button 
+            className="primary-button" 
+            type="submit"
+            disabled={isLoading}
+          >
+            {isLoading ? 'Logging in...' : 'Login'}
           </button>
         </form>
       </div>
