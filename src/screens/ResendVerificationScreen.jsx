@@ -22,7 +22,7 @@ export default function ResendVerificationScreen() {
 
     try {
       const res = await fetch(`${API_BASE_URL}/auth/resend-verification`, {
-        method: 'POST',
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email })
       });
@@ -31,15 +31,16 @@ export default function ResendVerificationScreen() {
 
       if (res.ok) {
         setSuccessMessage(data.message || 'Verification email has been resent.');
+        setEmail(''); // Clear the email field after successful resend
       } else {
         setErrorMessage(data.message || 'Failed to resend verification email.');
       }
     } catch (err) {
       console.error('Resend error:', err);
       setErrorMessage('Network error. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
-
-    setIsSubmitting(false);
   };
 
   return (
