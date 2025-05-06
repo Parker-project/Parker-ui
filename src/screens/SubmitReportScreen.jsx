@@ -3,55 +3,19 @@ import { useNavigate } from 'react-router-dom';
 import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
 import Autocomplete from 'react-google-autocomplete';
 import PageWrapper from '../components/PageWrapper';
+import './SubmitReportScreen.css';
 
-const MAP_CONTAINER_STYLE = {
-  width: '100%',
-  height: '300px',
-  marginBottom: '16px',
-  borderRadius: '8px'
-};
+const LIBRARIES = ['places'];
 
 const DEFAULT_CENTER = {
   lat: 31.7683, // Tel Aviv
   lng: 35.2137
 };
 
-const LIBRARIES = ['places'];
-
-const INPUT_STYLE = {
-  width: '100%',
-  height: '40px',
-  padding: '8px 12px',
-  marginBottom: '8px',
-  borderRadius: '4px',
-  border: '1px solid #ccc'
-};
-
-const BUTTON_STYLE = {
-  padding: '8px 12px',
-  backgroundColor: '#f0f0f0',
-  border: 'none',
-  borderRadius: '4px',
-  cursor: 'pointer',
-  display: 'flex',
-  alignItems: 'center'
-};
-
-const NavigationButtons = ({ onDashboardClick, onMyReportsClick }) => (
-  <div style={{ display: 'flex', gap: '10px' }}>
-    <button onClick={onDashboardClick} style={BUTTON_STYLE}>
-      <span style={{ marginRight: '5px' }}>🏠</span> Dashboard
-    </button>
-    <button onClick={onMyReportsClick} style={BUTTON_STYLE}>
-      <span style={{ marginRight: '5px' }}>📋</span> My Reports
-    </button>
-  </div>
-);
-
 const LocationDisplay = ({ isLoading, location }) => {
   if (isLoading) {
     return (
-      <div style={{ marginTop: '8px', fontSize: '14px', color: '#666' }}>
+      <div className="loading-indicator">
         Getting your current location...
       </div>
     );
@@ -60,9 +24,9 @@ const LocationDisplay = ({ isLoading, location }) => {
   if (!location) return null;
 
   return (
-    <div style={{ marginTop: '8px', fontSize: '14px', color: '#666' }}>
+    <div className="location-info">
       <strong>Selected Location:</strong> {location.address || 'Custom Location'}<br />
-      <strong>Coordinates:</strong> {location.lat.toFixed(6)}, {location.lng.toFixed(6)}
+      <strong>Coordinates:</strong> <span className="coordinates">{location.lat.toFixed(6)}, {location.lng.toFixed(6)}</span>
     </div>
   );
 };
@@ -283,9 +247,11 @@ export default function SubmitReportScreen() {
   if (uiState.apiError) {
     return (
       <PageWrapper>
-        <div className="page-container">
-          <h2>Submit Parking Violation</h2>
-          <div className="error-message" style={{ padding: '20px', textAlign: 'center' }}>
+        <div className="report-container">
+          <div className="report-header">
+            <h2>Submit Parking Violation</h2>
+          </div>
+          <div className="api-error">
             <p>Failed to load Google Maps. Please check your internet connection or try again later.</p>
             <p>If you're using an ad blocker, you may need to disable it for this site.</p>
           </div>
@@ -296,44 +262,41 @@ export default function SubmitReportScreen() {
 
   return (
     <PageWrapper>
-      <div className="page-container">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+      <div className="report-container">
+        <div className="report-header">
           <h2>Submit Parking Violation</h2>
-          <NavigationButtons 
-            onDashboardClick={() => navigate('/dashboard')}
-            onMyReportsClick={() => navigate('/my-reports')}
-          />
         </div>
 
         {uiState.submitted && (
-          <p style={{ color: 'green', textAlign: 'center', marginBottom: '10px' }}>
+          <div className="success-message">
             ✅ Report submitted successfully!
-          </p>
+          </div>
         )}
 
         {uiState.error && (
-          <p className="error-message">{uiState.error}</p>
+          <div className="error-message">{uiState.error}</div>
         )}
 
         <form onSubmit={handleSubmit}>
-          <input
-            className="input-field"
-            type="text"
-            placeholder="License Plate Number"
-            value={formData.licensePlate}
-            onChange={(e) => handleInputChange('licensePlate', e.target.value)}
-          />
+          <div className="form-group">
+            <label className="form-label">License Plate</label>
+            <input
+              className="form-input"
+              type="text"
+              placeholder="Enter license plate number"
+              value={formData.licensePlate}
+              onChange={(e) => handleInputChange('licensePlate', e.target.value)}
+            />
+          </div>
 
-          <div style={{ marginBottom: '16px' }}>
-            <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
-              Location
-            </label>
+          <div className="form-group">
+            <label className="form-label">Location</label>
             {!isLoaded ? (
-              <p>Loading Google Maps...</p>
+              <div className="loading-indicator">Loading Google Maps...</div>
             ) : (
               <>
                 <Autocomplete
-                  className="input-field"
+                  className="address-search"
                   apiKey={apiKey}
                   onPlaceSelected={handlePlaceSelected}
                   options={{
@@ -343,23 +306,24 @@ export default function SubmitReportScreen() {
                   placeholder="Search for an address"
                   value={formData.addressInput}
                   onChange={(e) => handleInputChange('addressInput', e.target.value)}
-                  style={INPUT_STYLE}
                 />
-                <GoogleMap
-                  mapContainerStyle={MAP_CONTAINER_STYLE}
-                  center={mapState.center}
-                  zoom={15}
-                  onLoad={onLoad}
-                  onUnmount={onUnmount}
-                >
-                  {formData.location && (
-                    <Marker
-                      position={formData.location}
-                      draggable={true}
-                      onDragEnd={handleMarkerDragEnd}
-                    />
-                  )}
-                </GoogleMap>
+                <div className="map-container">
+                  <GoogleMap
+                    mapContainerStyle={{ width: '100%', height: '100%' }}
+                    center={mapState.center}
+                    zoom={15}
+                    onLoad={onLoad}
+                    onUnmount={onUnmount}
+                  >
+                    {formData.location && (
+                      <Marker
+                        position={formData.location}
+                        draggable={true}
+                        onDragEnd={handleMarkerDragEnd}
+                      />
+                    )}
+                  </GoogleMap>
+                </div>
                 <LocationDisplay 
                   isLoading={uiState.isLoadingLocation}
                   location={formData.location}
@@ -368,16 +332,27 @@ export default function SubmitReportScreen() {
             )}
           </div>
 
-          <textarea
-            className="input-field"
-            rows="3"
-            placeholder="Additional Notes"
-            value={formData.notes}
-            onChange={(e) => handleInputChange('notes', e.target.value)}
-          />
+          <div className="form-group">
+            <label className="form-label">Additional Notes</label>
+            <textarea
+              className="form-input form-textarea"
+              placeholder="Describe the parking violation"
+              value={formData.notes}
+              onChange={(e) => handleInputChange('notes', e.target.value)}
+            />
+          </div>
 
-          <button className="primary-button" type="submit">
+          <button className="btn btn-primary" type="submit">
             Submit Report
+          </button>
+          
+          <button 
+            type="button" 
+            className="btn btn-secondary" 
+            onClick={() => navigate('/dashboard')}
+          >
+            <span className="btn-icon">🏠</span>
+            Back to Dashboard
           </button>
         </form>
       </div>
