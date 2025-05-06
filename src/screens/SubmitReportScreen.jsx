@@ -148,7 +148,6 @@ export default function SubmitReportScreen() {
   }, []);
 
   const handleLocationError = useCallback((error) => {
-    console.warn("Location error:", error);
     setFormData(prev => ({
       ...prev,
       location: { ...DEFAULT_CENTER, address: 'Default Location' },
@@ -223,17 +222,15 @@ export default function SubmitReportScreen() {
         }
       }
     } catch (err) {
-      console.error("Error submitting report:", err);
       setUiState(prev => ({ 
         ...prev, 
-        error: 'Server not available. Please try again later.' 
+        error: 'Submit failed. Please try again later.' 
       }));
     }
   };
 
   useEffect(() => {
     if (loadError) {
-      console.error("Google Maps loading error:", loadError);
       setUiState(prev => ({ ...prev, apiError: true }));
     }
   }, [loadError]);
