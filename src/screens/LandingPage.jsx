@@ -5,6 +5,14 @@ import parkingIcon from '../assets/parking-icon.png'; // <-- Make sure you have 
 export default function LandingPage({ user }) {
   const navigate = useNavigate();
 
+  const displayName =
+  user?.user?.firstName ||
+  user?.user?.name ||
+  user?.user?.fullName ||
+  user?.user?.email?.split('@')[0] ||
+  'friend';
+
+
   return (
     <PageWrapper>
       <div
@@ -17,8 +25,6 @@ export default function LandingPage({ user }) {
           animation: 'fadeIn 1s ease',
         }}
       >
-
-      {/* Visual element */}
         <img
           src={parkingIcon}
           alt="Parking Icon"
@@ -81,7 +87,7 @@ export default function LandingPage({ user }) {
         {user && (
           <div style={{ marginTop: '2rem' }}>
             <h3 style={{ marginBottom: '2rem', fontSize: '2rem', color: '#333', fontWeight: '600' }}>
-              Hello, {user.firstName}!
+              Hello, {displayName}!
             </h3>
             <button
               className="primary-button"
@@ -109,7 +115,6 @@ export default function LandingPage({ user }) {
         )}
       </div>
 
-      {/* Add global CSS inside your CSS file */}
       <style>
         {`
           body {

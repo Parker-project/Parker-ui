@@ -7,7 +7,9 @@ export default function InspectorDashboardScreen() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    fetch('http://localhost:3000/api/reports')
+    fetch('http://localhost:3000/api/reports', {
+      credentials: 'include',
+    })
       .then((res) => res.json())
       .then((data) => {
         setReports(data);
@@ -22,8 +24,15 @@ export default function InspectorDashboardScreen() {
 
   const handleMarkAsHandled = async (id) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/report/${id}/handle`, {
-        method: 'POST',
+      const response = await fetch(`http://localhost:3000/api/reports/${id}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          handled: true
+        }),
       });
 
       if (!response.ok) throw new Error('Failed to mark as handled');
@@ -41,8 +50,9 @@ export default function InspectorDashboardScreen() {
 
   const handleDeleteReport = async (id) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/report/${id}`, {
+      const response = await fetch(`http://localhost:3000/api/reports/${id}`, {
         method: 'DELETE',
+        credentials: 'include',
       });
 
       if (!response.ok) throw new Error('Failed to delete report');

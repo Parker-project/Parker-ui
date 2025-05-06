@@ -1,62 +1,46 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PageWrapper from '../components/PageWrapper';
-import { API_BASE_URL } from '../constants/api';
+import { login } from '../utils/api';
 
 export default function LoginScreen({ setUser }) {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState('');
-  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
+    setIsLoading(true);
 
     try {
-      const res = await fetch(`${API_BASE_URL}/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email,
-          password,
-          rememberMe: true, // Optional: for Alon's backend "remember me" feature
-        }),
-        credentials: 'include', // Important: allow cookies (access_token)
-      });
+      const data = await login(email, password, rememberMe);
+      setUser(data);
 
-      let data = {};
-
-      try {
-        const text = await res.text();
-        data = text ? JSON.parse(text) : {};
-      } catch (parseError) {
-        console.warn('No usable JSON body, but login succeeded');
-      }
-
-      if (!res.ok) {
-        let errorMessage = 'Login failed';
-        if (data && data.message) {
-          errorMessage = data.message;
-        }
-        setError(errorMessage);
+      // Check for sanitizedUser which is how the backend returns the user data
+      const userData = data.sanitizedUser || data.user || {};
+      
+      if (userData.isEmailVerified) {
+        // Add a small delay before redirecting
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 1000);
+      } else {
+        // Redirect to email verification page
+        setError('Please verify your email before logging in.');
+        setTimeout(() => {
+          navigate('/email-not-verified');
+        }, 2000);
         return;
       }
-
-      if (data && data.user) {
-        localStorage.setItem('user', JSON.stringify(data.user));
-        setUser(data.user);
-      } else if (data && data.token) {
-        localStorage.setItem('user', JSON.stringify(data));
-        setUser(data);
-      }
-
-      navigate('/submit-report');
     } catch (err) {
-      console.error('Login failed:', err);
-      setError('Something went wrong. Please try again.');
+      console.error('Login error:', err);
+      setError(err.message || 'Something went wrong. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -64,10 +48,9 @@ export default function LoginScreen({ setUser }) {
     <PageWrapper>
       <div className="page-container">
         <h2>Login</h2>
-
         {error && <p className="error-message">{error}</p>}
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleLogin}>
           <input
             className="input-field"
             type="email"
@@ -75,6 +58,7 @@ export default function LoginScreen({ setUser }) {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            disabled={isLoading}
           />
           <input
             className="input-field"
@@ -83,9 +67,25 @@ export default function LoginScreen({ setUser }) {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            disabled={isLoading}
           />
-          <button className="primary-button" type="submit">
-            Login
+
+          <label className="checkbox-label">
+            <input
+              type="checkbox"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+              disabled={isLoading}
+            />
+            Remember Me
+          </label>
+
+          <button 
+            className="primary-button" 
+            type="submit"
+            disabled={isLoading}
+          >
+            {isLoading ? 'Logging in...' : 'Login'}
           </button>
         </form>
       </div>
