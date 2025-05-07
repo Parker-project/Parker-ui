@@ -17,9 +17,16 @@ import MyReportsScreen from './screens/MyReportsScreen';
 import DashboardScreen from './screens/DashboardScreen';
 import './App.css';
 
+
+export const handleSessionExpired = () => {
+  const event = new CustomEvent('session_expired');
+  window.dispatchEvent(event);
+};
+
 function AppContent() {
   const [user, setUser] = useState(null);
   const location = useLocation();
+  const navigate = useNavigate();
   const hideNavbarOn = ['/verify-email'];
 
   useEffect(() => {
@@ -28,6 +35,25 @@ function AppContent() {
       setUser(JSON.parse(storedUser));
     }
   }, []);
+
+  useEffect(() => {
+    const handleSessionExpiredEvent = () => {
+      localStorage.removeItem('user');
+      setUser(null);
+      
+      if (location.pathname !== '/login') {
+        navigate('/login', { 
+          state: { message: 'Your session has expired. Please log in again.' } 
+        });
+      }
+    };
+    
+    window.addEventListener('session_expired', handleSessionExpiredEvent);
+    
+    return () => {
+      window.removeEventListener('session_expired', handleSessionExpiredEvent);
+    };
+  }, [navigate, location.pathname]);
 
   return (
     <>
