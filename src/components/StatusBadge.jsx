@@ -1,23 +1,36 @@
-export default function StatusBadge({ status }) {
+import './StatusBadge.css';
+
+export default function StatusBadge({ status = 'pending' }) {
+  const statusLower = (status || 'pending').toLowerCase();
+  
   const colorMap = {
-    Pending: '#ffc107',
-    Resolved: '#28a745',
-    'In Progress': '#17a2b8'
+    pending: '#f1c40f',
+    approved: '#2ecc71',
+    rejected: '#e74c3c'
+  };
+
+  const formatStatus = (status) => {
+    if (!status) return 'Pending';
+    return status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
+  };
+
+  const getStatusClass = () => {
+    const classes = ['status-badge'];
+    if (['pending', 'approved', 'rejected'].includes(statusLower)) {
+      classes.push(statusLower);
+    }
+    return classes.join(' ');
   };
 
   return (
     <span
+      className={getStatusClass()}
       style={{
-        display: 'inline-block',
-        backgroundColor: colorMap[status] || '#6c757d',
-        color: 'white',
-        padding: '4px 12px',
-        borderRadius: '20px',
-        fontSize: '0.85rem',
-        fontWeight: 'bold'
+        backgroundColor: colorMap[statusLower] || '#6c757d',
+        color: statusLower === 'pending' ? '#000' : 'white'
       }}
     >
-      {status}
+      {formatStatus(status)}
     </span>
   );
 }
