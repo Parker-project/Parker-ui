@@ -10,11 +10,35 @@ export default function LoginScreen({ setUser, setIsAuth }) {
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState('');
+  const [emailError, setEmailError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  const validateEmail = (email) => {
+    if (!email.includes('@')) {
+      return false;
+    }
+    return true;
+  };
+
+  const handleEmailChange = (e) => {
+    const newEmail = e.target.value;
+    setEmail(newEmail);
+    
+    if (emailError) {
+      setEmailError('');
+    }
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
+    setEmailError('');
+    
+    if (!validateEmail(email)) {
+      setEmailError('Invalid email format. Please include an @ symbol.');
+      return;
+    }
+    
     setIsLoading(true);
 
     try {
@@ -75,14 +99,17 @@ export default function LoginScreen({ setUser, setIsAuth }) {
           <div className="form-group">
             <label className="form-label">Email</label>
             <input
-              className="form-input"
-              type="email"
+              className={`form-input ${emailError ? 'input-error' : ''}`}
+              type="text"
               placeholder="Enter your email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={handleEmailChange}
               required
               disabled={isLoading}
             />
+            {emailError && (
+              <div className="input-error-message">{emailError}</div>
+            )}
           </div>
           
           <div className="form-group">
