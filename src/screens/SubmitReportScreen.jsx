@@ -238,6 +238,13 @@ export default function SubmitReportScreen() {
     }
   };
 
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+    }
+  };
+
   useEffect(() => {
     if (loadError) {
       setUiState(prev => ({ ...prev, apiError: true }));
@@ -291,7 +298,7 @@ export default function SubmitReportScreen() {
           <div className="error-message">{uiState.error}</div>
         )}
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} onKeyDown={handleKeyDown}>
           <div className="form-group">
             <label className="form-label">License Plate</label>
             <input
@@ -320,6 +327,7 @@ export default function SubmitReportScreen() {
                   placeholder="Search for an address"
                   value={formData.addressInput}
                   onChange={(e) => handleInputChange('addressInput', e.target.value)}
+                  onKeyDown={handleKeyDown}
                 />
                 <div className="map-container">
                   <GoogleMap
@@ -356,7 +364,11 @@ export default function SubmitReportScreen() {
             />
           </div>
 
-          <button className="btn btn-primary" type="submit">
+          <button 
+            className="btn btn-primary" 
+            type="button" 
+            onClick={handleSubmit}
+          >
             Submit Report
           </button>
         </form>

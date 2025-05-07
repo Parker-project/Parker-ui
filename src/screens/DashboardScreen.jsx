@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import { FaCarAlt, FaClipboardList, FaUserAlt, FaSignOutAlt } from 'react-icons/fa';
 import parkingIcon from '../assets/parking-icon.png';
 import './DashboardScreen.css';
-// import { setUser } from '../components/Navbar';
 
 export default function DashboardScreen({ user }) {
   const navigate = useNavigate();
