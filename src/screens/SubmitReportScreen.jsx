@@ -172,6 +172,14 @@ export default function SubmitReportScreen() {
       return;
     }
 
+    const cleanedPlate = licensePlate.replace(/-/g, '');
+
+    // Enforce 6-8 digits only (after removing dashes)
+    if (!/^\d{6,8}$/.test(cleanedPlate)) {
+      setUiState(prev => ({ ...prev, error: 'License plate must be 6 to 8 digits (numbers only)' }));
+      return;
+    }
+
     if (!notes.trim()) {
       setUiState(prev => ({ ...prev, error: 'Description is required!' }));
       return;
@@ -183,7 +191,7 @@ export default function SubmitReportScreen() {
     }
 
     const reportData = {
-      liscensePlateNumber: licensePlate,
+      liscensePlateNumber: cleanedPlate,
       description: notes,
       location: {
         latitude: location.lat,
@@ -280,7 +288,7 @@ export default function SubmitReportScreen() {
             <input
               className="form-input"
               type="text"
-              placeholder="Enter license plate number"
+              placeholder="XX-XXX-XX"
               value={formData.licensePlate}
               onChange={(e) => handleInputChange('licensePlate', e.target.value)}
             />
@@ -343,14 +351,16 @@ export default function SubmitReportScreen() {
             Submit Report
           </button>
           
-          <button 
-            type="button" 
-            className="btn btn-secondary" 
-            onClick={() => navigate('/dashboard')}
-          >
-            <span className="btn-icon">🏠</span>
-            Back to Dashboard
-          </button>
+          <div className="dashboard-button-container">
+            <button 
+              type="button" 
+              className="btn btn-secondary" 
+              onClick={() => navigate('/dashboard')}
+            >
+              <span className="btn-icon">🏠</span>
+              Back to Dashboard
+            </button>
+          </div>
         </form>
       </div>
     </PageWrapper>

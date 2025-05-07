@@ -1,0 +1,13 @@
+.app-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 16px;
+  padding-bottom: 80px;
+}
+
+.page-content {
+  width: 100%;
+  max-width: 1200px;
+} 

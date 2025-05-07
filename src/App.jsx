@@ -10,17 +10,17 @@ import EmailNotVerifiedScreen from './screens/EmailNotVerifiedScreen';
 import ResendVerificationScreen from './screens/ResendVerificationScreen';
 import RequireAuth from './components/RequireAuth';
 import RequireInspector from './components/RequireInspector';
-import LogoutButton from './components/LogoutButton';
 import ReportDetail from './screens/ReportDetail';
 import InspectorDashboardScreen from './screens/InspectorDashboardScreen';
 import LandingPage from './screens/LandingPage';
 import MyReportsScreen from './screens/MyReportsScreen';
+import DashboardScreen from './screens/DashboardScreen';
+import './App.css';
 
 function AppContent() {
   const [user, setUser] = useState(null);
   const location = useLocation();
-  const navigate = useNavigate();
-  const hideNavbarOn = ['/login', '/signup', '/verify-email'];
+  const hideNavbarOn = ['/verify-email'];
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -40,7 +40,6 @@ function AppContent() {
           <Route path="/" element={<LandingPage user={user} />} />
           <Route path="/signup" element={<SignupScreen setUser={setUser} />} />
           <Route path="/login" element={<LoginScreen setUser={setUser} />} />
-          <Route path="/submit-report" element={<SubmitReportScreen />} />
           <Route path="/verify-email" element={<VerifyTokenScreen setUser={setUser} />} />
           <Route path="/verify-email-token" element={<VerifyTokenScreen setUser={setUser} />} />
           <Route path="/resend-verification" element={<ResendVerificationScreen />} />
@@ -51,58 +50,35 @@ function AppContent() {
             path="/dashboard"
             element={
               <RequireAuth user={user}>
-                <div>
-                  <h2>Dashboard</h2>
-                  <p>Welcome, {user?.sanitizedUser?.firstName || user?.user?.firstName || 'User'}!</p>
-                  <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
-                    <button 
-                      onClick={() => navigate('/submit-report')}
-                      className="primary-button"
-                    >
-                      Submit Report
-                    </button>
-                    <button 
-                      onClick={() => navigate('/my-reports')}
-                      className="primary-button"
-                    >
-                      My Reports
-                    </button>
-                  </div>
-                </div>
+                <DashboardScreen user={user} />
               </RequireAuth>
             }
           />
 
           <Route
-            path="/main"
+            path="/submit-report"
             element={
               <RequireAuth user={user}>
-                <div>
-                  <h2>Main Page (User)</h2>
-                  <LogoutButton setUser={setUser} />
-                </div>
-              </RequireAuth>
-            }
-          />
-
-          <Route
-            path="/admin"
-            element={
-              <RequireAuth user={user}>
-                <div>
-                  <h2>Admin Page</h2>
-                  <LogoutButton setUser={setUser} />
-                </div>
+                <SubmitReportScreen user={user} />
               </RequireAuth>
             }
           />
 
           <Route
             path="/my-reports"
-            element={ // ✅ ADDED NEW PROTECTED ROUTE
+            element={
               <RequireAuth user={user}>
                 <MyReportsScreen user={user} />
               </RequireAuth>
+            }
+          />
+
+          <Route
+            path="/inspector"
+            element={
+              <RequireInspector user={user}>
+                <InspectorDashboardScreen user={user} />
+              </RequireInspector>
             }
           />
 
@@ -112,15 +88,6 @@ function AppContent() {
               <RequireAuth user={user}>
                 <ReportDetail />
               </RequireAuth>
-            }
-          />
-
-          <Route
-            path="/inspector"
-            element={
-              <RequireInspector user={user}>
-                <InspectorDashboardScreen />
-              </RequireInspector>
             }
           />
 
@@ -135,7 +102,9 @@ function AppContent() {
 function App() {
   return (
     <Router>
-      <AppContent />
+      <div className="app">
+        <AppContent />
+      </div>
     </Router>
   );
 }

@@ -28,6 +28,7 @@
   margin-bottom: 25px;
   padding-bottom: 15px;
   border-bottom: 1px solid #eee;
+  text-align: center;
 }
 
 .report-header h2 {
@@ -39,6 +40,7 @@
 /* Form elements */
 .form-group {
   margin-bottom: 20px;
+  text-align: left;
 }
 
 .form-label {
@@ -46,6 +48,7 @@
   margin-bottom: 8px;
   font-weight: 600;
   color: #444;
+  text-align: left;
 }
 
 .form-input {
@@ -116,10 +119,16 @@
   max-width: 300px;
   margin-left: auto;
   margin-right: auto;
+  text-align: center;
 }
 
 .btn-secondary:hover {
   background-color: #e9ecef;
+}
+
+.dashboard-button-container {
+  text-align: center;
+  margin-top: 20px;
 }
 
 .btn-icon {
@@ -135,6 +144,7 @@
   line-height: 1.5;
   margin-top: 10px;
   border-left: 3px solid var(--primary-color);
+  text-align: left;
 }
 
 .coordinates {

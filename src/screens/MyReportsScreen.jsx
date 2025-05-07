@@ -1,8 +1,10 @@
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import PageWrapper from '../components/PageWrapper';
-import StatusBadge from '../components/StatusBadge'; //  new badge component
+import { motion } from 'framer-motion';
+import StatusBadge from '../components/StatusBadge';
 import { getReports } from '../utils/api';
+import '../App.css';
+import './MyReportsScreen.css';
 
 export default function MyReportsScreen({ user }) {
   const navigate = useNavigate();
@@ -41,114 +43,130 @@ export default function MyReportsScreen({ user }) {
     }
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { duration: 0.3 } 
+    }
+  };
+
+  const reportVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: (i) => ({ 
+      opacity: 1, 
+      y: 0, 
+      transition: { 
+        delay: i * 0.1,
+        duration: 0.3
+      } 
+    }),
+    hover: { 
+      y: -5, 
+      boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
+      transition: { duration: 0.2 }
+    }
+  };
+
   return (
-    <PageWrapper>
-      <div className="page-container" style={{ padding: '2rem 1rem', maxWidth: '600px', margin: '0 auto' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+    <div className="page-container">
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <div className="page-header">
           <h2>My Reports</h2>
           <button 
             onClick={() => navigate('/dashboard')}
-            style={{
-              padding: '8px 12px',
-              backgroundColor: '#f0f0f0',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center'
-            }}
+            className="btn btn-secondary"
           >
-            <span style={{ marginRight: '5px' }}>🏠</span> Dashboard
+            <span className="btn-icon">🏠</span> Dashboard
           </button>
         </div>
         
         {loading ? (
-          <p style={{ textAlign: 'center', color: '#555' }}>Loading reports...</p>
+          <p className="loading-state">Loading reports...</p>
         ) : error ? (
-          <div style={{ padding: '20px', backgroundColor: '#fff0f0', borderRadius: '8px', textAlign: 'center' }}>
-            <p style={{ color: '#d32f2f' }}>{error}</p>
+          <motion.div 
+            className="error-state"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            <p>{error}</p>
             <button 
               onClick={fetchReports}
-              style={{
-                padding: '8px 16px',
-                marginTop: '12px',
-                backgroundColor: '#f0f0f0',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer'
-              }}
+              className="btn btn-secondary"
             >
               Try Again
             </button>
-          </div>
+          </motion.div>
         ) : (
           <>
-            <p style={{ marginBottom: '1rem', color: '#555' }}>
-              Showing reports submitted by <strong>{user?.user?.firstName || user?.sanitizedUser?.firstName || user?.user?.email || 'you'}</strong>:
-            </p>
+            <motion.div 
+              className="user-info"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.3 }}
+            >
+              Showing reports submitted by <strong>{user?.user?.firstName || user?.sanitizedUser?.firstName || user?.user?.email || 'you'}</strong>
+            </motion.div>
 
             {reports.length === 0 ? (
-              <div style={{ 
-                padding: '30px', 
-                textAlign: 'center', 
-                backgroundColor: '#f9f9f9', 
-                borderRadius: '8px',
-                border: '1px dashed #ddd'
-              }}>
-                <p style={{ marginBottom: '16px', color: '#666' }}>You haven't submitted any reports yet.</p>
+              <motion.div 
+                className="empty-state"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3, duration: 0.3 }}
+              >
+                <p>You haven't submitted any reports yet.</p>
                 <button 
                   onClick={() => navigate('/submit-report')}
-                  style={{
-                    padding: '10px 16px',
-                    backgroundColor: '#007bff',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                    fontWeight: 'bold'
-                  }}
+                  className="btn btn-primary"
                 >
                   Submit Your First Report
                 </button>
-              </div>
+              </motion.div>
             ) : (
-              reports.map((report) => (
-                <div
-                  key={report._id || report.id}
-                  style={{
-                    background: '#f9f9f9',
-                    border: '1px solid #ddd',
-                    borderRadius: '8px',
-                    padding: '1rem',
-                    marginBottom: '1rem',
-                    boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.05)'
-                  }}
-                >
-                  <strong style={{ display: 'block', marginBottom: '0.5rem' }}>
-                    {formatReportTitle(report)}
-                  </strong>
-                  {report.liscensePlateNumber && (
-                    <p style={{ fontSize: '0.9rem', color: '#666', marginBottom: '0.5rem' }}>
-                      License plate: <strong>{report.liscensePlateNumber}</strong>
-                    </p>
-                  )}
-                  {report.location && (
-                    <p style={{ fontSize: '0.9rem', color: '#666', marginBottom: '0.5rem' }}>
-                      Location: {report.location.address || `${report.location.latitude.toFixed(6)}, ${report.location.longitude.toFixed(6)}`}
-                    </p>
-                  )}
-                  {report.createdAt && (
-                    <p style={{ fontSize: '0.9rem', color: '#666', marginBottom: '0.5rem' }}>
-                      Submitted: {new Date(report.createdAt).toLocaleString()}
-                    </p>
-                  )}
-                  <StatusBadge status={report.status || 'Pending'} />
-                </div>
-              ))
+              <div className="reports-list">
+                {reports.map((report, index) => (
+                  <motion.div
+                    key={report._id || report.id}
+                    className="report-card"
+                    custom={index}
+                    variants={reportVariants}
+                    initial="hidden"
+                    animate="visible"
+                    whileHover="hover"
+                  >
+                    <div className="report-title">
+                      {formatReportTitle(report)}
+                    </div>
+                    {report.liscensePlateNumber && (
+                      <p className="report-details">
+                        License plate: <strong>{report.liscensePlateNumber}</strong>
+                      </p>
+                    )}
+                    {report.location && (
+                      <p className="report-details">
+                        Location: {report.location.address || `${report.location.latitude.toFixed(6)}, ${report.location.longitude.toFixed(6)}`}
+                      </p>
+                    )}
+                    {report.createdAt && (
+                      <p className="report-details">
+                        Submitted: {new Date(report.createdAt).toLocaleString()}
+                      </p>
+                    )}
+                    <StatusBadge status={report.status || 'Pending'} />
+                  </motion.div>
+                ))}
+              </div>
             )}
           </>
         )}
-      </div>
-    </PageWrapper>
+      </motion.div>
+    </div>
   );
 }

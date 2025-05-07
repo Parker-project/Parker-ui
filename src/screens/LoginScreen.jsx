@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import PageWrapper from '../components/PageWrapper';
+import { motion } from 'framer-motion';
+import './LoginScreen.css';
 import { login } from '../utils/api';
 
 export default function LoginScreen({ setUser }) {
@@ -45,50 +46,76 @@ export default function LoginScreen({ setUser }) {
   };
 
   return (
-    <PageWrapper>
-      <div className="page-container">
-        <h2>Login</h2>
-        {error && <p className="error-message">{error}</p>}
+    <div className="page-container">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <div className="page-header">
+          <h2>Login</h2>
+        </div>
+        
+        {error && (
+          <div className="message message-error">
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleLogin}>
-          <input
-            className="input-field"
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            disabled={isLoading}
-          />
-          <input
-            className="input-field"
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            disabled={isLoading}
-          />
-
-          <label className="checkbox-label">
+          <div className="form-group">
+            <label className="form-label">Email</label>
             <input
-              type="checkbox"
-              checked={rememberMe}
-              onChange={(e) => setRememberMe(e.target.checked)}
+              className="form-input"
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
               disabled={isLoading}
             />
-            Remember Me
-          </label>
+          </div>
+          
+          <div className="form-group">
+            <label className="form-label">Password</label>
+            <input
+              className="form-input"
+              type="password"
+              placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              disabled={isLoading}
+            />
+          </div>
 
-          <button 
-            className="primary-button" 
-            type="submit"
-            disabled={isLoading}
-          >
-            {isLoading ? 'Logging in...' : 'Login'}
-          </button>
+          <div className="form-group checkbox-group">
+            <label className="checkbox-label">
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                disabled={isLoading}
+              />
+              <span className="checkbox-text">Remember Me</span>
+            </label>
+          </div>
+
+          <div className="form-group" style={{ marginTop: '24px' }}>
+            <button 
+              className="btn btn-primary" 
+              type="submit"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Logging in...' : 'Login'}
+            </button>
+          </div>
+          
+          <div className="form-footer">
+            <p>Don't have an account? <a href="/signup">Sign up</a></p>
+          </div>
         </form>
-      </div>
-    </PageWrapper>
+      </motion.div>
+    </div>
   );
 }
