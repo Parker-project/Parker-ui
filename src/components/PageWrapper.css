@@ -10,4 +10,16 @@
 .page-content {
   width: 100%;
   max-width: 1200px;
+}
+
+@media (max-width: 768px) {
+  .app-container {
+    padding: 0;
+    padding-bottom: 80px;
+  }
+  
+  .page-content {
+    width: 100%;
+    max-width: 100%;
+  }
 } 
