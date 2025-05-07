@@ -28,7 +28,7 @@ export default function LoginScreen({ setUser }) {
         // Add a small delay before redirecting
         setTimeout(() => {
           navigate('/dashboard');
-        }, 1000);
+        }, 100);
       } else {
         // Redirect to email verification page
         setError('Please verify your email before logging in.');

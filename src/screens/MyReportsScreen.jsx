@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { FaArrowLeft } from 'react-icons/fa';
 import StatusBadge from '../components/StatusBadge';
 import { getReports } from '../utils/api';
 import '../App.css';
@@ -80,9 +81,10 @@ export default function MyReportsScreen({ user }) {
           <h2>My Reports</h2>
           <button 
             onClick={() => navigate('/dashboard')}
-            className="btn btn-secondary"
+            className="btn btn-secondary back-btn"
+            aria-label="Back to Dashboard"
           >
-            <span className="btn-icon">🏠</span> Dashboard
+            <FaArrowLeft />
           </button>
         </div>
         

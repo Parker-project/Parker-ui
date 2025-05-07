@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
 import Autocomplete from 'react-google-autocomplete';
+import { FaArrowLeft } from 'react-icons/fa';
 import PageWrapper from '../components/PageWrapper';
 import './SubmitReportScreen.css';
 
@@ -270,6 +271,14 @@ export default function SubmitReportScreen() {
       <div className="report-container">
         <div className="report-header">
           <h2>Submit Parking Violation</h2>
+          <button 
+            type="button" 
+            className="btn btn-secondary back-btn" 
+            onClick={() => navigate('/dashboard')}
+            aria-label="Back to Dashboard"
+          >
+            <FaArrowLeft />
+          </button>
         </div>
 
         {uiState.submitted && (
@@ -350,17 +359,6 @@ export default function SubmitReportScreen() {
           <button className="btn btn-primary" type="submit">
             Submit Report
           </button>
-          
-          <div className="dashboard-button-container">
-            <button 
-              type="button" 
-              className="btn btn-secondary" 
-              onClick={() => navigate('/dashboard')}
-            >
-              <span className="btn-icon">🏠</span>
-              Back to Dashboard
-            </button>
-          </div>
         </form>
       </div>
     </PageWrapper>

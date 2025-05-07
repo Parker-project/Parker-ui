@@ -17,7 +17,7 @@ export default function Navbar({ user, setUser }) {
   const handleLogout = () => {
     localStorage.removeItem('user');
     setUser(null);
-    navigate('/login');
+    navigate('/');
   };
 
   const isActive = (path) => location.pathname === path;

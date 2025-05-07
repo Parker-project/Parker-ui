@@ -3,12 +3,14 @@ import { motion } from 'framer-motion';
 import { FaCarAlt, FaClipboardList, FaUserAlt, FaSignOutAlt } from 'react-icons/fa';
 import parkingIcon from '../assets/parking-icon.png';
 import './DashboardScreen.css';
+// import { setUser } from '../components/Navbar';
 
 export default function DashboardScreen({ user }) {
   const navigate = useNavigate();
   
   const handleLogout = () => {
     localStorage.removeItem('user');
+    setUser(null);
     navigate('/');
   };
 
@@ -43,13 +45,13 @@ export default function DashboardScreen({ user }) {
       description: 'View your submitted reports and their status',
       action: () => navigate('/my-reports')
     },
-    {
-      id: 'profile',
-      icon: <FaUserAlt />,
-      title: 'Profile',
-      description: 'Update your personal information',
-      action: () => navigate('/profile')
-    },
+    // {
+    //   id: 'profile',
+    //   icon: <FaUserAlt />,
+    //   title: 'Profile',
+    //   description: 'Update your personal information',
+    //   action: () => navigate('/profile')
+    // },
     {
       id: 'logout',
       icon: <FaSignOutAlt />,
@@ -71,13 +73,13 @@ export default function DashboardScreen({ user }) {
         transition={{ duration: 0.3 }}
       >
         <div className="page-header">
-          <div className="dashboard-logo-container">
+          <div className="dashboard-header">
             <img 
               src={parkingIcon} 
               alt="Parker App Logo" 
               className="dashboard-logo" 
             />
-            <h2>Dashboard</h2>
+            <h2 className="dashboard-title">Dashboard</h2>
           </div>
         </div>
 
