@@ -120,3 +120,27 @@ export const getReports = async (userId) => {
   const endpoint = userId ? `/reports/${userId}` : '/reports';
   return apiRequest(endpoint);
 };
+
+export const getUserProfile = async () => {
+  try {
+    try {
+      const response = await apiRequest('/user/profile');
+      console.log('Authentication check successful:', response);
+      return response;
+    } catch (profileError) {
+      // If user/profile fails, try auth/me as a fallback
+      console.log('Profile endpoint failed, trying auth/me endpoint...');
+      const response = await apiRequest('/auth/me');
+      console.log('Authentication check successful with auth/me:', response);
+      return response;
+    }
+  } catch (error) {
+    console.error('Authentication check failed with both endpoints:', error);
+    
+    if (error.message === 'Failed to fetch') {
+      console.warn('Network error - server might be down or unavailable');
+    }
+    
+    throw error;
+  }
+};

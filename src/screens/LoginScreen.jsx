@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import './LoginScreen.css';
 import { login } from '../utils/api';
 
-export default function LoginScreen({ setUser }) {
+export default function LoginScreen({ setUser, setIsAuth }) {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -19,26 +19,35 @@ export default function LoginScreen({ setUser }) {
 
     try {
       const data = await login(email, password, rememberMe);
-      setUser(data);
 
-      // Check for sanitizedUser which is how the backend returns the user data
-      const userData = data.sanitizedUser || data.user || {};
-      
-      if (userData.isEmailVerified) {
-        // Add a small delay before redirecting
-        setTimeout(() => {
-          navigate('/dashboard');
-        }, 100);
+      if (data) {
+        localStorage.setItem('user', JSON.stringify(data));
+        setUser(data);
+        setIsAuth(true);
+        
+        // Check for sanitizedUser which is how the backend returns the user data
+        const userData = data.sanitizedUser || data.user || {};
+        
+        if (userData.isEmailVerified) {
+          setIsLoading(false);
+          
+          // Let state updates finish
+          setTimeout(() => {
+            navigate('/dashboard');
+          }, 100);
+        } else {
+          // Redirect to email verification page
+          setError('Please verify your email before logging in.');
+          setIsLoading(false);
+          setTimeout(() => {
+            navigate('/email-not-verified');
+          }, 1000);
+        }
       } else {
-        // Redirect to email verification page
-        setError('Please verify your email before logging in.');
-        setTimeout(() => {
-          navigate('/email-not-verified');
-        }, 2000);
-        return;
+        setIsLoading(false);
+        setError('Login failed. Please try again.');
       }
     } catch (err) {
-      console.error('Login error:', err);
       setError(err.message || 'Something went wrong. Please try again.');
     } finally {
       setIsLoading(false);

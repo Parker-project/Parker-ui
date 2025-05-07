@@ -209,3 +209,14 @@ body {
 .read-the-docs {
   color: #888;
 }
+
+.auth-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: var(--light-bg);
+  color: var(--primary-color);
+  font-size: 1.5rem;
+  font-weight: 500;
+}

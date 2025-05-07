@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import './SignupScreen.css';
 import { API_BASE_URL } from '../constants/api';
 
-export default function SignupScreen({ setUser }) {
+export default function SignupScreen({ setUser, setIsAuth }) {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
@@ -46,7 +46,7 @@ export default function SignupScreen({ setUser }) {
             console.log('Parsed response:', data);
             if (data && data.token) {
               localStorage.setItem('user', JSON.stringify(data));
-              setUser(data);
+              handleSuccessfulSignup(data);
             }
           }
         } catch (parseError) {
@@ -75,6 +75,11 @@ export default function SignupScreen({ setUser }) {
       setIsLoading(false);
     }
   };  
+
+  const handleSuccessfulSignup = (data) => {
+    setUser(data);
+    setIsAuth(true);
+  }
 
   return (
     <div className="page-container">

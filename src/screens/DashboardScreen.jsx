@@ -2,16 +2,24 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaCarAlt, FaClipboardList, FaUserAlt, FaSignOutAlt } from 'react-icons/fa';
 import parkingIcon from '../assets/parking-icon.png';
+import { logout } from '../utils/api';
 import './DashboardScreen.css';
-// import { setUser } from '../components/Navbar';
 
-export default function DashboardScreen({ user }) {
+export default function DashboardScreen({ user, setUser, setIsAuth }) {
   const navigate = useNavigate();
   
-  const handleLogout = () => {
-    localStorage.removeItem('user');
-    setUser(null);
-    navigate('/');
+  const handleLogout = async () => {
+    try {
+      await logout(); // Call the logout API endpoint
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      // Even if the API call fails, clear the local state
+      localStorage.removeItem('user');
+      setUser(null);
+      setIsAuth(false);
+      navigate('/');
+    }
   };
 
   // Animation variants
