@@ -205,6 +205,10 @@ function AppContent() {
 
           {/* Fallback Route */}
           <Route path="*" element={<h2>404 - Page Not Found</h2>} />
+
+          <Route path="/verify-email/:token" element={<VerifyTokenScreen setUser={setUser} />} />
+
+
         </Routes>
       </PageWrapper>
     </>

@@ -13,6 +13,7 @@
   "dependencies": {
     "@react-google-maps/api": "^2.20.6",
     "framer-motion": "^12.7.3",
+    "prop-types": "^15.8.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-google-autocomplete": "^2.7.5",
