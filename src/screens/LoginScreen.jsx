@@ -12,6 +12,37 @@ export default function LoginScreen({ setUser, setIsAuth }) {
   const [error, setError] = useState('');
   const [emailError, setEmailError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showResetModal, setShowResetModal] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetMessage, setResetMessage] = useState('');
+  const [isSendingReset, setIsSendingReset] = useState(false);
+
+
+  const handleSendResetEmail = async () => {
+    setIsSendingReset(true);
+    setResetMessage('');
+  
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/request-password-reset`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: resetEmail })
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        setResetMessage('Reset link sent! Check your inbox.');
+      } else {
+        setResetMessage(data.message || 'Failed to send reset link.');
+      }
+    } catch (err) {
+      setResetMessage('Server error. Please try again.');
+    } finally {
+      setIsSendingReset(false);
+    }
+  };
+  
 
   const validateEmail = (email) => email.includes('@');
 
@@ -58,7 +89,7 @@ export default function LoginScreen({ setUser, setIsAuth }) {
 
   const handleGoogleLogin = () => {
     window.location.href = `${import.meta.env.VITE_BACKEND_URL}/auth/google`;
-  };
+  };  
 
   return (
     <div className="page-container">
@@ -150,8 +181,84 @@ export default function LoginScreen({ setUser, setIsAuth }) {
   </button>
 </div>
 
+<div style={{ marginTop: '16px', textAlign: 'center' }}>
+  <button
+    type="button"
+    onClick={() => setShowResetModal(true)}
+    style={{ background: 'none', border: 'none', color: '#007bff', cursor: 'pointer' }}
+  >
+    Forgot your password?
+  </button>
+</div>
+
+
 
         </form>
+        {showResetModal && (
+  <div className="modal-overlay">
+    <div className="modal-content">
+      <div className="page-header">
+        <h2 style={{ marginBottom: '1rem' }}>Reset Password</h2>
+      </div>
+
+      <form onSubmit={(e) => e.preventDefault()}>
+        <div className="form-group">
+          <label className="form-label">Email</label>
+          <input
+            className="form-input"
+            type="email"
+            placeholder="Enter your email"
+            value={resetEmail}
+            onChange={(e) => setResetEmail(e.target.value)}
+            required
+          />
+        </div>
+
+        {resetMessage && (
+          <div
+            className="message"
+            style={{
+              color: resetMessage.toLowerCase().includes('sent') ? 'green' : 'red',
+              marginTop: '0.5rem'
+            }}
+          >
+            {resetMessage}
+          </div>
+        )}
+
+        <div className="form-group" style={{ marginTop: '1.5rem' }}>
+          <button
+            className="btn btn-primary"
+            onClick={handleSendResetEmail}
+            disabled={isSendingReset}
+            style={{ width: '100%' }}
+          >
+            {isSendingReset ? 'Sending...' : 'Send Reset Link'}
+          </button>
+        </div>
+
+        <div className="form-group" style={{ marginTop: '1rem', textAlign: 'center' }}>
+          <button
+            type="button"
+            onClick={() => setShowResetModal(false)}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#007bff',
+              fontWeight: 'bold',
+              cursor: 'pointer'
+            }}
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+)}
+
+
+
       </motion.div>
     </div>
   );
