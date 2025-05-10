@@ -7,11 +7,12 @@ export default function LandingPage({ user }) {
   const navigate = useNavigate();
 
   const displayName =
-    user?.user?.firstName ||
-    user?.user?.name ||
-    user?.user?.fullName ||
-    user?.user?.email?.split('@')[0] ||
-    'friend';
+  user?.firstName ||
+  user?.name ||
+  user?.fullName ||
+  user?.email?.split('@')[0] ||
+  'friend';
+
 
   return (
     <PageWrapper>

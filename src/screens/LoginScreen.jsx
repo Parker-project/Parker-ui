@@ -13,62 +13,40 @@ export default function LoginScreen({ setUser, setIsAuth }) {
   const [emailError, setEmailError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const validateEmail = (email) => {
-    if (!email.includes('@')) {
-      return false;
-    }
-    return true;
-  };
+  const validateEmail = (email) => email.includes('@');
 
   const handleEmailChange = (e) => {
-    const newEmail = e.target.value;
-    setEmail(newEmail);
-    
-    if (emailError) {
-      setEmailError('');
-    }
+    setEmail(e.target.value);
+    if (emailError) setEmailError('');
   };
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
     setEmailError('');
-    
+
     if (!validateEmail(email)) {
       setEmailError('Invalid email format. Please include an @ symbol.');
       return;
     }
-    
+
     setIsLoading(true);
 
     try {
       const data = await login(email, password, rememberMe);
-
       if (data) {
         localStorage.setItem('user', JSON.stringify(data));
         setUser(data);
         setIsAuth(true);
-        
-        // Check for sanitizedUser which is how the backend returns the user data
         const userData = data.sanitizedUser || data.user || {};
-        
+
         if (userData.isEmailVerified) {
-          setIsLoading(false);
-          
-          // Let state updates finish
-          setTimeout(() => {
-            navigate('/dashboard');
-          }, 100);
+          setTimeout(() => navigate('/dashboard'), 100);
         } else {
-          // Redirect to email verification page
           setError('Please verify your email before logging in.');
-          setIsLoading(false);
-          setTimeout(() => {
-            navigate('/email-not-verified');
-          }, 1000);
+          setTimeout(() => navigate('/email-not-verified'), 1000);
         }
       } else {
-        setIsLoading(false);
         setError('Login failed. Please try again.');
       }
     } catch (err) {
@@ -76,6 +54,10 @@ export default function LoginScreen({ setUser, setIsAuth }) {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleGoogleLogin = () => {
+    window.location.href = `${import.meta.env.VITE_BACKEND_URL}/auth/google`;
   };
 
   return (
@@ -88,12 +70,8 @@ export default function LoginScreen({ setUser, setIsAuth }) {
         <div className="page-header">
           <h2>Login</h2>
         </div>
-        
-        {error && (
-          <div className="message message-error">
-            {error}
-          </div>
-        )}
+
+        {error && <div className="message message-error">{error}</div>}
 
         <form onSubmit={handleLogin}>
           <div className="form-group">
@@ -107,11 +85,9 @@ export default function LoginScreen({ setUser, setIsAuth }) {
               required
               disabled={isLoading}
             />
-            {emailError && (
-              <div className="input-error-message">{emailError}</div>
-            )}
+            {emailError && <div className="input-error-message">{emailError}</div>}
           </div>
-          
+
           <div className="form-group">
             <label className="form-label">Password</label>
             <input
@@ -138,18 +114,43 @@ export default function LoginScreen({ setUser, setIsAuth }) {
           </div>
 
           <div className="form-group" style={{ marginTop: '24px' }}>
-            <button 
-              className="btn btn-primary" 
-              type="submit"
-              disabled={isLoading}
-            >
+            <button className="btn btn-primary" type="submit" disabled={isLoading}>
               {isLoading ? 'Logging in...' : 'Login'}
             </button>
           </div>
-          
-          <div className="form-footer">
-            <p>Don't have an account? <a href="/signup">Sign up</a></p>
-          </div>
+
+          <div className="form-group">
+  <button
+    type="button"
+    onClick={handleGoogleLogin}
+    style={{
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: '10px',
+      padding: '0.75rem',
+      backgroundColor: 'white',
+      color: '#444',
+      border: '1px solid #ddd',
+      borderRadius: '999px',
+      fontWeight: 'bold',
+      fontSize: '1rem', // 👈 Bigger font
+      cursor: 'pointer',
+      width: '50%',
+      maxWidth: '320px',
+      margin: '0 auto'
+    }}
+  >
+    <img
+      src="https://developers.google.com/identity/images/g-logo.png"
+      alt="Google logo"
+      style={{ width: '20px', height: '20px' }}
+    />
+    Sign in with Google
+  </button>
+</div>
+
+
         </form>
       </motion.div>
     </div>

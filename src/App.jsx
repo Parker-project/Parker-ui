@@ -213,11 +213,9 @@ function AppContent() {
 
 function App() {
   return (
-    <Router>
       <div className="app">
         <AppContent />
       </div>
-    </Router>
   );
 }
 
