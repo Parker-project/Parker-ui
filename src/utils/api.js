@@ -121,6 +121,11 @@ export const getReports = async (userId) => {
   return apiRequest(endpoint);
 };
 
+export const getAllReports = async => {
+  const endpoint = `/reports`;
+  return apiRequest(endpoint);
+};
+
 export const getUserProfile = async () => {
   try {
     try {
@@ -144,3 +149,19 @@ export const getUserProfile = async () => {
     throw error;
   }
 };
+
+
+export const updateReportStatus = async (reportId, newStatus) => {
+  const endpoint = `/reports/${reportId}/status`;
+  const res = await apiRequest(endpoint, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ status: newStatus }),
+  });
+
+  if (!res.ok) throw new Error('Failed to update status');
+
+  return await res.json();
+}
