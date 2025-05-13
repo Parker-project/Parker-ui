@@ -1,18 +1,16 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation, useParams } from 'react-router-dom';
 import { API_BASE_URL } from '../constants/api';
 import PageWrapper from '../components/PageWrapper';
-import { useParams } from 'react-router-dom';
-
-const { token: tokenFromPath } = useParams();
-
 
 export default function VerifyTokenScreen({ setUser }) {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const [status, setStatus] = useState('verifying'); // verifying | success | error
+  const { token: tokenFromPath } = useParams(); // ✅ moved inside component
+  const [status, setStatus] = useState('verifying');
   const [error, setError] = useState('');
+
 
   useEffect(() => {
     const verifyToken = async () => {
