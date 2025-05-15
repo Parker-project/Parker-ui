@@ -8,16 +8,25 @@ import {
   FaTools,
   FaFileAlt
 } from 'react-icons/fa';
+import { logout } from '../utils/api';
 import './Navbar.css';
 
 export default function Navbar({ user, setUser }) {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleLogout = () => {
-    localStorage.removeItem('user');
-    setUser(null);
-    navigate('/');
+  const handleLogout = async () => {
+    try {
+      await logout();
+      setUser(null);
+      navigate('/');
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Even if the API call fails, clear local state
+      localStorage.removeItem('user');
+      setUser(null);
+      navigate('/');
+    }
   };
 
   const isActive = (path) => location.pathname === path;
@@ -76,7 +85,7 @@ export default function Navbar({ user, setUser }) {
     <nav className="navbar">
       <div className="nav-content">
         {/* Home link always shows */}
-        <Link 
+        <Link
           to={user ? '/dashboard' : '/'}
           className={`nav-link ${isActive(user ? '/dashboard' : '/') ? 'active' : ''}`}
         >

@@ -8,13 +8,13 @@ export default function LogoutButton({ setUser }) {
     try {
       await logout();
       setUser(null);
-      navigate('/login');
+      navigate('/');
     } catch (error) {
       console.error('Logout error:', error);
       // Even if the API call fails, we should still clear local state
       localStorage.removeItem('user');
       setUser(null);
-      navigate('/login');
+      navigate('/');
     }
   };
 
