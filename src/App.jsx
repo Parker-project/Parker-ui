@@ -11,10 +11,12 @@ import ResendVerificationScreen from './screens/ResendVerificationScreen';
 import RequireAuth from './components/RequireAuth';
 import RequireInspector from './components/RequireInspector';
 import ReportDetail from './screens/ReportDetail';
-import InspectorDashboardScreen from './screens/InspectorDashboardScreen';
+import AdminDashboard from './screens/InspectorDashboardScreen';
 import LandingPage from './screens/LandingPage';
 import MyReportsScreen from './screens/MyReportsScreen';
 import DashboardScreen from './screens/DashboardScreen';
+import AdminDashboardScreen from './screens/AdminDashboardScreen';
+import MapViewScreen from './screens/AdminMapViewScreen';
 import { getUserProfile } from './utils/api';
 import './App.css';
 
@@ -186,11 +188,20 @@ function AppContent() {
           />
 
           <Route
-            path="/inspector"
+            path="/admin/dashboard"
             element={
-              <RequireInspector user={user} isAuth={isAuth} isVerifyingAuth={isVerifyingAuth}>
-                <InspectorDashboardScreen user={user} />
-              </RequireInspector>
+              <RequireAuth user={user} isAuth={isAuth} isVerifyingAuth={isVerifyingAuth}>
+                <AdminDashboardScreen/>
+              </RequireAuth>
+            }
+          />
+
+          <Route
+            path="/admin/map-view"
+            element={
+              <RequireAuth user={user} isAuth={isAuth} isVerifyingAuth={isVerifyingAuth}>
+                <MapViewScreen /> /
+              </RequireAuth>
             }
           />
 
