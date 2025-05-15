@@ -59,9 +59,16 @@ function AppContent() {
 
           if (response.ok) {
             const userData = await response.json();
-            console.log('Got user data from server:', userData);
-            localStorage.setItem('user', JSON.stringify(userData));
-            setUser(userData);
+
+            // Create complete user object
+            const completeUserData = {
+              ...userData,
+              isEmailVerified: userData.isEmailVerified,
+              provider: userData.provider || 'local' // Default to 'local' if not specified
+            };
+
+            localStorage.setItem('user', JSON.stringify(completeUserData));
+            setUser(completeUserData);
             setIsAuth(true);
             setIsVerifyingAuth(false);
             return;
@@ -103,6 +110,18 @@ function AppContent() {
           console.log('Verifying authentication with server...');
           const profileData = await getUserProfile();
           console.log('Server verification successful:', profileData);
+
+          // Update user data with the complete profile data
+          const updatedUserData = {
+            ...userData,
+            ...profileData,
+            isEmailVerified: profileData.isEmailVerified,
+            provider: profileData.provider || 'local' // Default to 'local' if not specified
+          };
+
+          // Update localStorage with complete user data
+          localStorage.setItem('user', JSON.stringify(updatedUserData));
+          setUser(updatedUserData);
           setIsAuth(true);
         } catch (error) {
           console.error('Server verification failed:', error);

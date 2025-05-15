@@ -125,7 +125,6 @@ export const getUserProfile = async () => {
   try {
     try {
       const response = await apiRequest('/user/profile');
-      console.log('Authentication check successful:', response);
       return response;
     } catch (profileError) {
       // If user/profile fails, try auth/me as a fallback
