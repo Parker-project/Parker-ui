@@ -1,19 +1,53 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { FaUpload, FaCamera, FaExclamationCircle } from 'react-icons/fa';
 import { MdCancel } from 'react-icons/md';
 import { detectLicensePlate, getHighestConfidencePlate } from '../utils/api';
 import './ImageUpload.css';
 
- 
 export default function ImageUpload({ onLicensePlateDetected, onImageSelected }) {
   const [selectedImage, setSelectedImage] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState('');
+  const [isCameraActive, setIsCameraActive] = useState(false);
   const fileInputRef = useRef(null);
-  const cameraInputRef = useRef(null);
+  const videoRef = useRef(null);
+  const streamRef = useRef(null);
 
-  
+  useEffect(() => {
+    if (isCameraActive && videoRef.current) {
+      let stream;
+      const startCamera = async () => {
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: {
+              facingMode: 'environment',
+              width: { ideal: 1920 },
+              height: { ideal: 1080 }
+            }
+          });
+          videoRef.current.srcObject = stream;
+          streamRef.current = stream; // Store the stream for cleanup
+        } catch (err) {
+          console.error('Camera error:', err);
+          setError('Could not access camera. Please ensure permissions are granted.');
+          setIsCameraActive(false);
+        }
+      };
+      startCamera();
+
+      return () => {
+        if (streamRef.current) {
+          streamRef.current.getTracks().forEach(track => track.stop());
+          streamRef.current = null;
+        }
+        if (videoRef.current) {
+            videoRef.current.srcObject = null;
+        }
+      };
+    }
+  }, [isCameraActive]); // Rerun when isCameraActive changes
+
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -24,10 +58,38 @@ export default function ImageUpload({ onLicensePlateDetected, onImageSelected })
     const fileUrl = URL.createObjectURL(file);
     setPreviewUrl(fileUrl);
     
-    // Call the callback to let parent component know an image was selected
     if (onImageSelected) {
       onImageSelected(file);
     }
+  };
+
+  const handleCameraClick = () => {
+    setError('');
+    setIsCameraActive(true);
+  };
+
+  const handleCapture = () => {
+    if (!videoRef.current || !videoRef.current.srcObject) return;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = videoRef.current.videoWidth;
+    canvas.height = videoRef.current.videoHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(videoRef.current, 0, 0);
+
+    canvas.toBlob((blob) => {
+      const file = new File([blob], 'camera-capture.jpg', { type: 'image/jpeg' });
+      setSelectedImage(file);
+      setPreviewUrl(URL.createObjectURL(blob));
+      if (onImageSelected) {
+        onImageSelected(file);
+      }
+      stopCamera();
+    }, 'image/jpeg', 0.95);
+  };
+
+  const stopCamera = () => {
+    setIsCameraActive(false); // This will trigger the cleanup in useEffect
   };
 
   const processImageForOCR = async (file) => {
@@ -59,7 +121,7 @@ export default function ImageUpload({ onLicensePlateDetected, onImageSelected })
       else if (errorMessage.includes("server couldn't process") || 
           errorMessage.includes("OCR failed") || 
           errorMessage.includes("Unexpected token")) {
-        
+        setError('The image could not be processed. Please try a clearer photo or enter the plate manually.');
       } else {
         setError(errorMessage);
       }
@@ -81,21 +143,15 @@ export default function ImageUpload({ onLicensePlateDetected, onImageSelected })
     setSelectedImage(null);
     setPreviewUrl(null);
     setError('');
+    stopCamera();
     
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
-    }
-    if (cameraInputRef.current) {
-      cameraInputRef.current.value = '';
     }
   };
 
   const handleUploadClick = () => {
     fileInputRef.current.click();
-  };
-
-  const handleCameraClick = () => {
-    cameraInputRef.current.click();
   };
 
   return (
@@ -107,16 +163,26 @@ export default function ImageUpload({ onLicensePlateDetected, onImageSelected })
         accept="image/jpeg,image/png"
         className="file-input"
       />
-      <input
-        type="file"
-        ref={cameraInputRef}
-        onChange={handleFileChange}
-        accept="image/jpeg,image/png"
-        capture="environment"
-        className="file-input"
-      />
       
-      {!selectedImage ? (
+      {isCameraActive && !selectedImage ? (
+        <div className="camera-view">
+          <video
+            ref={videoRef}
+            autoPlay
+            playsInline
+            muted
+            className="camera-preview"
+          />
+          <div className="camera-controls">
+            <button type="button" onClick={handleCapture} className="capture-button">
+              <FaCamera />
+            </button>
+            <button type="button" onClick={stopCamera} className="cancel-button">
+              <MdCancel />
+            </button>
+          </div>
+        </div>
+      ) : !selectedImage ? (
         <div className="upload-placeholder">
           <div className="upload-buttons">
             <button type="button" onClick={handleUploadClick} className="upload-button">
