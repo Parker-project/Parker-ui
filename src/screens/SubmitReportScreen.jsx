@@ -2,8 +2,10 @@ import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
 import Autocomplete from 'react-google-autocomplete';
-import { FaArrowLeft } from 'react-icons/fa';
+import { FaArrowLeft, FaCheck } from 'react-icons/fa';
 import PageWrapper from '../components/PageWrapper';
+import ImageUpload from '../components/ImageUpload';
+import { submitReport } from '../utils/api';
 import './SubmitReportScreen.css';
 
 const LIBRARIES = ['places'];
@@ -38,13 +40,15 @@ export default function SubmitReportScreen() {
     licensePlate: '',
     notes: '',
     location: null,
-    addressInput: ''
+    addressInput: '',
+    image: null
   });
   const [uiState, setUiState] = useState({
     submitted: false,
     error: '',
     isLoadingLocation: true,
-    apiError: false
+    apiError: false,
+    ocrSuccess: false
   });
   const [mapState, setMapState] = useState({
     center: DEFAULT_CENTER,
@@ -162,6 +166,20 @@ export default function SubmitReportScreen() {
     setFormData(prev => ({ ...prev, [field]: value }));
   }, []);
 
+  // OCR handlers
+  const handleLicensePlateDetected = useCallback((licensePlate) => {
+    setFormData(prev => ({ ...prev, licensePlate }));
+    setUiState(prev => ({ ...prev, ocrSuccess: true }));
+    
+    setTimeout(() => {
+      setUiState(prev => ({ ...prev, ocrSuccess: false }));
+    }, 3000);
+  }, []);
+
+  const handleImageSelected = useCallback((imageFile) => {
+    setFormData(prev => ({ ...prev, image: imageFile }));
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setUiState(prev => ({ ...prev, error: '', submitted: false }));
@@ -202,34 +220,19 @@ export default function SubmitReportScreen() {
     };
 
     try {
-      const response = await fetch('http://localhost:3000/api/reports', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify(reportData),
+      await submitReport(reportData);
+      setUiState(prev => ({ ...prev, submitted: true }));
+      setFormData({
+        licensePlate: '',
+        notes: '',
+        location: null,
+        addressInput: '',
+        image: null
       });
-
-      const text = await response.text();
-      
-      if (response.ok) {
-        setUiState(prev => ({ ...prev, submitted: true }));
-        setFormData({
-          licensePlate: '',
-          notes: '',
           location: null,
-          addressInput: ''
-        });
       } else {
         try {
-          const data = JSON.parse(text);
-          setUiState(prev => ({ ...prev, error: data.message || 'Failed to submit report.' }));
-        } catch {
-          setUiState(prev => ({ 
             ...prev, 
-            error: `Failed to submit report: ${response.status} ${response.statusText}` 
-          }));
-        }
-      }
     } catch (err) {
       setUiState(prev => ({ 
         ...prev, 
@@ -290,7 +293,7 @@ export default function SubmitReportScreen() {
 
         {uiState.submitted && (
           <div className="success-message">
-            ✅ Report submitted successfully!
+            Report submitted successfully!
           </div>
         )}
 
@@ -298,7 +301,22 @@ export default function SubmitReportScreen() {
           <div className="error-message">{uiState.error}</div>
         )}
 
+        {uiState.ocrSuccess && (
+          <div className="success-message ocr-success">
+            <FaCheck /> License plate detected successfully!
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} onKeyDown={handleKeyDown}>
+          <div className="form-group">
+            <label className="form-label">Car Photo (for license plate detection)</label>
+            <ImageUpload 
+              onLicensePlateDetected={handleLicensePlateDetected} 
+              onImageSelected={handleImageSelected}
+            />
+            <small className="form-helper-text">Upload a photo of the car to automatically detect the license plate</small>
+          </div>
+
           <div className="form-group">
             <label className="form-label">License Plate</label>
             <input
@@ -308,6 +326,7 @@ export default function SubmitReportScreen() {
               value={formData.licensePlate}
               onChange={(e) => handleInputChange('licensePlate', e.target.value)}
             />
+            <small className="form-helper-text">Enter 6-8 digits (dashes will be removed)</small>
           </div>
 
           <div className="form-group">
