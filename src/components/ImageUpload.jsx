@@ -4,6 +4,19 @@ import { MdCancel } from 'react-icons/md';
 import { detectLicensePlate, getHighestConfidencePlate } from '../utils/api';
 import './ImageUpload.css';
 
+const getImageDimensions = (fileUrl) => 
+  new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      resolve({ width: img.width, height: img.height });
+    };
+    img.onerror = (err) => {
+      console.error("Error loading image for dimensions:", err);
+      reject(err);
+    };
+    img.src = fileUrl;
+  });
+
 export default function ImageUpload({ onLicensePlateDetected, onImageSelected }) {
   const [selectedImage, setSelectedImage] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
@@ -29,11 +42,11 @@ export default function ImageUpload({ onLicensePlateDetected, onImageSelected })
             }
           });
           videoRef.current.srcObject = stream;
-          streamRef.current = stream; // Store the stream for cleanup
+          streamRef.current = stream; 
         } catch (err) {
           console.error('Camera error:', err);
           setError('Could not access camera. Please ensure permissions are granted.');
-          setIsCameraActive(false);
+          setIsCameraActive(false); 
         }
       };
       startCamera();
@@ -48,7 +61,7 @@ export default function ImageUpload({ onLicensePlateDetected, onImageSelected })
         }
       };
     }
-  }, [isCameraActive]); // Rerun when isCameraActive changes
+  }, [isCameraActive]); 
 
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
@@ -56,27 +69,22 @@ export default function ImageUpload({ onLicensePlateDetected, onImageSelected })
 
     setError('');
     setSelectedImage(file);
+    setDetectionBox(null); 
+    setImageDimensions(null);
     
     const fileUrl = URL.createObjectURL(file);
     setPreviewUrl(fileUrl);
     
-    const img = new Image();
-    img.onload = () => {
-      setImageDimensions({
-        width: img.width,
-        height: img.height
-      });
-    };
-    img.src = fileUrl;
+    try {
+      const dimensions = await getImageDimensions(fileUrl);
+      setImageDimensions(dimensions);
+    } catch (err) {
+      setError("Could not load image details. Please try a different image.");
+    }
     
     if (onImageSelected) {
       onImageSelected(file);
     }
-  };
-
-  const handleCameraClick = () => {
-    setError('');
-    setIsCameraActive(true);
   };
 
   const handleCapture = () => {
@@ -88,21 +96,20 @@ export default function ImageUpload({ onLicensePlateDetected, onImageSelected })
     const ctx = canvas.getContext('2d');
     ctx.drawImage(videoRef.current, 0, 0);
 
-    canvas.toBlob((blob) => {
+    canvas.toBlob(async (blob) => {
       const file = new File([blob], 'camera-capture.jpg', { type: 'image/jpeg' });
       setSelectedImage(file);
+      setDetectionBox(null); 
+      setImageDimensions(null);
       const fileUrl = URL.createObjectURL(blob);
       setPreviewUrl(fileUrl);
       
-      // Calculate detection box dimensions
-      const img = new Image();
-      img.onload = () => {
-        setImageDimensions({
-          width: img.width,
-          height: img.height
-        });
-      };
-      img.src = fileUrl;
+      try {
+        const dimensions = await getImageDimensions(fileUrl);
+        setImageDimensions(dimensions);
+      } catch (err) {
+        setError("Could not load image details. Please try a different image.");
+      }
       
       if (onImageSelected) {
         onImageSelected(file);
@@ -111,26 +118,23 @@ export default function ImageUpload({ onLicensePlateDetected, onImageSelected })
     }, 'image/jpeg', 0.95);
   };
 
-  const stopCamera = () => {
-    setIsCameraActive(false); // This will trigger the cleanup in useEffect
-  };
-
   const processImageForOCR = async (file) => {
+    if (!imageDimensions) {
+      setError("Image dimensions are not available. Cannot process for OCR.");
+      console.error("Attempted to process OCR without image dimensions.");
+      setIsProcessing(false);
+      return;
+    }
     setIsProcessing(true);
     setError('');
     setDetectionBox(null);
     try {
       const ocrResult = await detectLicensePlate(file);
-      console.log('OCR Result:', ocrResult);
-      
       const licensePlate = getHighestConfidencePlate(ocrResult);
       
       if (licensePlate) {
         onLicensePlateDetected(licensePlate);
-        // Set the detection box if available in the response
         if (ocrResult.licensePlate?.box && imageDimensions) {
-          console.log('Setting detection box:', ocrResult.licensePlate.box);
-          // Calculate relative coordinates
           const box = ocrResult.licensePlate.box;
           const relativeBox = {
             xmin: (box.xmin / imageDimensions.width) * 100,
@@ -138,10 +142,7 @@ export default function ImageUpload({ onLicensePlateDetected, onImageSelected })
             xmax: (box.xmax / imageDimensions.width) * 100,
             ymax: (box.ymax / imageDimensions.height) * 100
           };
-          console.log('Relative box:', relativeBox);
           setDetectionBox(relativeBox);
-        } else {
-          console.log('No box coordinates or image dimensions available');
         }
       } else {
         setError('No license plate detected in this image. Please try a clearer photo or enter the plate manually.');
@@ -149,22 +150,12 @@ export default function ImageUpload({ onLicensePlateDetected, onImageSelected })
     } catch (err) {
       console.error('OCR Error:', err);
       const errorMessage = err.message || 'Failed to detect license plate. Please try again or enter manually.';
-      
       if (errorMessage.includes("Internal Server Error") || 
           errorMessage.includes("500") || 
           errorMessage.includes("encountered an internal error")) {
         setError('The license plate detection service is currently having technical issues. Please enter the plate manually.');
       }
-      else if (errorMessage.includes("Cannot read properties of undefined") || 
-               errorMessage.includes("TypeError") ||
-               errorMessage.includes("internal error")) {
-        setError('The image could not be processed by our license plate detection system. Please enter the plate manually.');
-      }
-      else if (errorMessage.includes("server couldn't process") || 
-          errorMessage.includes("OCR failed") || 
-          errorMessage.includes("Unexpected token")) {
-        setError('The image could not be processed. Please try a clearer photo or enter the plate manually.');
-      } else {
+       else {
         setError(errorMessage);
       }
     } finally {
@@ -186,6 +177,7 @@ export default function ImageUpload({ onLicensePlateDetected, onImageSelected })
     setPreviewUrl(null);
     setError('');
     setDetectionBox(null);
+    setImageDimensions(null); 
     stopCamera();
     
     if (fileInputRef.current) {
@@ -195,6 +187,15 @@ export default function ImageUpload({ onLicensePlateDetected, onImageSelected })
 
   const handleUploadClick = () => {
     fileInputRef.current.click();
+  };
+
+  const handleCameraClick = () => {
+    setError(''); 
+    setIsCameraActive(true);
+  };
+
+  const stopCamera = () => {
+    setIsCameraActive(false); 
   };
 
   return (
