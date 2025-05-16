@@ -36,20 +36,17 @@ function AppContent() {
   useEffect(() => {
     // Skip verification entirely if we're already on login page to prevent loops
     if (location.pathname === '/login') {
-      console.log('Already on login page, skipping verification');
       setIsVerifyingAuth(false);
       return;
     }
     
     const verifyAuth = async () => {
       setIsVerifyingAuth(true);
-      console.log('Verifying authentication status...');
       
       // First try to get user from localStorage
       const storedUser = localStorage.getItem('user');
       
       if (!storedUser) {
-        console.log('No stored user found');
         setUser(null);
         setIsAuth(false);
         setIsVerifyingAuth(false);
@@ -69,7 +66,6 @@ function AppContent() {
                             currentPath.includes('/verify-email');
         
         if (isPublicRoute) {
-          console.log('On public route, skipping server verification');
           setIsAuth(true); // Temporarily set as authenticated
           setIsVerifyingAuth(false);
           return;
@@ -77,9 +73,7 @@ function AppContent() {
         
         // Then verify with the server that the user is still authenticated
         try {
-          console.log('Verifying authentication with server...');
           await getUserProfile();
-          console.log('Server verification successful');
           setIsAuth(true);
         } catch (error) {
           console.error('Server verification failed:', error);
