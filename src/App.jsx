@@ -35,16 +35,14 @@ function AppContent() {
   // Verify authentication status on app load or refresh
   useEffect(() => {
     // Skip verification entirely if we're already on login page to prevent loops
-    if (location.pathname === '/login' || location.pathname === '/auth/google/callback') {
-      console.log('On login or callback page, skipping verification');
+    if (location.pathname === '/login') {
       setIsVerifyingAuth(false);
       return;
     }
 
     const verifyAuth = async () => {
       setIsVerifyingAuth(true);
-      console.log('Starting auth verification...');
-
+      
       // First try to get user from localStorage
       const storedUser = localStorage.getItem('user');
       console.log('Stored user in localStorage:', storedUser ? 'exists' : 'not found');
@@ -99,7 +97,6 @@ function AppContent() {
           currentPath.includes('/verify-email');
 
         if (isPublicRoute) {
-          console.log('On public route, skipping server verification');
           setIsAuth(true); // Temporarily set as authenticated
           setIsVerifyingAuth(false);
           return;
