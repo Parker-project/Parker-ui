@@ -10,6 +10,8 @@ export default function ImageUpload({ onLicensePlateDetected, onImageSelected })
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState('');
   const [isCameraActive, setIsCameraActive] = useState(false);
+  const [detectionBox, setDetectionBox] = useState(null);
+  const [imageDimensions, setImageDimensions] = useState(null);
   const fileInputRef = useRef(null);
   const videoRef = useRef(null);
   const streamRef = useRef(null);
@@ -58,6 +60,15 @@ export default function ImageUpload({ onLicensePlateDetected, onImageSelected })
     const fileUrl = URL.createObjectURL(file);
     setPreviewUrl(fileUrl);
     
+    const img = new Image();
+    img.onload = () => {
+      setImageDimensions({
+        width: img.width,
+        height: img.height
+      });
+    };
+    img.src = fileUrl;
+    
     if (onImageSelected) {
       onImageSelected(file);
     }
@@ -80,7 +91,19 @@ export default function ImageUpload({ onLicensePlateDetected, onImageSelected })
     canvas.toBlob((blob) => {
       const file = new File([blob], 'camera-capture.jpg', { type: 'image/jpeg' });
       setSelectedImage(file);
-      setPreviewUrl(URL.createObjectURL(blob));
+      const fileUrl = URL.createObjectURL(blob);
+      setPreviewUrl(fileUrl);
+      
+      // Calculate detection box dimensions
+      const img = new Image();
+      img.onload = () => {
+        setImageDimensions({
+          width: img.width,
+          height: img.height
+        });
+      };
+      img.src = fileUrl;
+      
       if (onImageSelected) {
         onImageSelected(file);
       }
@@ -95,17 +118,36 @@ export default function ImageUpload({ onLicensePlateDetected, onImageSelected })
   const processImageForOCR = async (file) => {
     setIsProcessing(true);
     setError('');
-    // API call
+    setDetectionBox(null);
     try {
       const ocrResult = await detectLicensePlate(file);
+      console.log('OCR Result:', ocrResult);
+      
       const licensePlate = getHighestConfidencePlate(ocrResult);
       
       if (licensePlate) {
         onLicensePlateDetected(licensePlate);
+        // Set the detection box if available in the response
+        if (ocrResult.licensePlate?.box && imageDimensions) {
+          console.log('Setting detection box:', ocrResult.licensePlate.box);
+          // Calculate relative coordinates
+          const box = ocrResult.licensePlate.box;
+          const relativeBox = {
+            xmin: (box.xmin / imageDimensions.width) * 100,
+            ymin: (box.ymin / imageDimensions.height) * 100,
+            xmax: (box.xmax / imageDimensions.width) * 100,
+            ymax: (box.ymax / imageDimensions.height) * 100
+          };
+          console.log('Relative box:', relativeBox);
+          setDetectionBox(relativeBox);
+        } else {
+          console.log('No box coordinates or image dimensions available');
+        }
       } else {
         setError('No license plate detected in this image. Please try a clearer photo or enter the plate manually.');
       }
     } catch (err) {
+      console.error('OCR Error:', err);
       const errorMessage = err.message || 'Failed to detect license plate. Please try again or enter manually.';
       
       if (errorMessage.includes("Internal Server Error") || 
@@ -143,6 +185,7 @@ export default function ImageUpload({ onLicensePlateDetected, onImageSelected })
     setSelectedImage(null);
     setPreviewUrl(null);
     setError('');
+    setDetectionBox(null);
     stopCamera();
     
     if (fileInputRef.current) {
@@ -198,7 +241,20 @@ export default function ImageUpload({ onLicensePlateDetected, onImageSelected })
         </div>
       ) : (
         <div className="image-preview-container">
-          <img src={previewUrl} alt="Selected car" className="image-preview" />
+          <div className="image-wrapper">
+            <img src={previewUrl} alt="Selected car" className="image-preview" />
+            {detectionBox && (
+              <div 
+                className="detection-box"
+                style={{
+                  left: `${detectionBox.xmin}%`,
+                  top: `${detectionBox.ymin}%`,
+                  width: `${detectionBox.xmax - detectionBox.xmin}%`,
+                  height: `${detectionBox.ymax - detectionBox.ymin}%`
+                }}
+              />
+            )}
+          </div>
           
           <div className="image-actions">
             <button 
