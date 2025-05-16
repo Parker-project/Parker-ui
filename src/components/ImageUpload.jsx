@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { FaUpload, FaCamera, FaExclamationCircle } from 'react-icons/fa';
+import { FaUpload, FaCamera, FaExclamationCircle, FaSync, FaSearch, FaRedoAlt } from 'react-icons/fa';
 import { MdCancel } from 'react-icons/md';
 import { detectLicensePlate, getHighestConfidencePlate } from '../utils/api';
 import './ImageUpload.css';
@@ -25,6 +25,7 @@ export default function ImageUpload({ onLicensePlateDetected, onImageSelected })
   const [isCameraActive, setIsCameraActive] = useState(false);
   const [detectionBox, setDetectionBox] = useState(null);
   const [imageDimensions, setImageDimensions] = useState(null);
+  const [isFromCamera, setIsFromCamera] = useState(false);
   const fileInputRef = useRef(null);
   const videoRef = useRef(null);
   const streamRef = useRef(null);
@@ -69,8 +70,9 @@ export default function ImageUpload({ onLicensePlateDetected, onImageSelected })
 
     setError('');
     setSelectedImage(file);
-    setDetectionBox(null); 
+    setDetectionBox(null);
     setImageDimensions(null);
+    setIsFromCamera(false);
     
     const fileUrl = URL.createObjectURL(file);
     setPreviewUrl(fileUrl);
@@ -99,8 +101,9 @@ export default function ImageUpload({ onLicensePlateDetected, onImageSelected })
     canvas.toBlob(async (blob) => {
       const file = new File([blob], 'camera-capture.jpg', { type: 'image/jpeg' });
       setSelectedImage(file);
-      setDetectionBox(null); 
+      setDetectionBox(null);
       setImageDimensions(null);
+      setIsFromCamera(true);
       const fileUrl = URL.createObjectURL(blob);
       setPreviewUrl(fileUrl);
       
@@ -143,6 +146,8 @@ export default function ImageUpload({ onLicensePlateDetected, onImageSelected })
             ymax: (box.ymax / imageDimensions.height) * 100
           };
           setDetectionBox(relativeBox);
+        } else {
+          console.error('No box coordinates or image dimensions available for detection box display.');
         }
       } else {
         setError('No license plate detected in this image. Please try a clearer photo or enter the plate manually.');
@@ -163,9 +168,9 @@ export default function ImageUpload({ onLicensePlateDetected, onImageSelected })
     }
   };
 
-  const handleRetry = async () => {
+  const handleScan = () => {
     if (selectedImage) {
-      await processImageForOCR(selectedImage);
+      processImageForOCR(selectedImage);
     }
   };
 
@@ -177,12 +182,18 @@ export default function ImageUpload({ onLicensePlateDetected, onImageSelected })
     setPreviewUrl(null);
     setError('');
     setDetectionBox(null);
-    setImageDimensions(null); 
+    setImageDimensions(null);
+    setIsFromCamera(false);
     stopCamera();
     
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
+  };
+
+  const handleRecapturePhoto = () => {
+    handleClear();
+    handleCameraClick();
   };
 
   const handleUploadClick = () => {
@@ -198,6 +209,114 @@ export default function ImageUpload({ onLicensePlateDetected, onImageSelected })
     setIsCameraActive(false); 
   };
 
+  const renderCameraView = () => (
+    <div className="camera-view">
+      <video
+        ref={videoRef}
+        autoPlay
+        playsInline
+        muted
+        className="camera-preview"
+      />
+      <div className="camera-controls">
+        <button type="button" onClick={handleCapture} className="capture-button">
+          <FaCamera />
+        </button>
+        <button type="button" onClick={stopCamera} className="cancel-button">
+          <MdCancel />
+        </button>
+      </div>
+    </div>
+  );
+
+  const renderUploadPlaceholder = () => (
+    <div className="upload-placeholder">
+      <div className="upload-buttons">
+        <button type="button" onClick={handleUploadClick} className="upload-button">
+          <FaUpload className="upload-icon" />
+          <span>Upload Photo</span>
+        </button>
+        <button type="button" onClick={handleCameraClick} className="camera-button">
+          <FaCamera className="camera-icon" />
+          <span>Take Photo</span>
+        </button>
+      </div>
+      <small>Select a photo or take one with your camera</small>
+    </div>
+  );
+
+  const renderImagePreview = () => (
+    <div className="image-preview-container">
+      <div className="image-wrapper">
+        <img src={previewUrl} alt="Selected car" className="image-preview" />
+        {detectionBox && (
+          <div 
+            className="detection-box"
+            style={{
+              left: `${detectionBox.xmin}%`,
+              top: `${detectionBox.ymin}%`,
+              width: `${detectionBox.xmax - detectionBox.xmin}%`,
+              height: `${detectionBox.ymax - detectionBox.ymin}%`
+            }}
+          />
+        )}
+      </div>
+      
+      <div className="image-actions">
+        <div className="left-actions-group">
+          <button 
+            type="button" 
+            className="clear-button" 
+            onClick={handleClear}
+            aria-label="Clear image"
+          >
+            <MdCancel />
+          </button>
+          
+          {isFromCamera && (
+            <button 
+              type="button" 
+              className="action-button recapture-button" 
+              onClick={handleRecapturePhoto}
+              aria-label="Take new photo"
+            >
+              <FaRedoAlt />
+            </button>
+          )}
+        </div>
+
+        {onLicensePlateDetected && (
+          <div className="scan-actions-group">
+            <button 
+              type="button" 
+              className="scan-button primary-scan-button" 
+              onClick={handleScan} 
+              disabled={isProcessing}
+              aria-label="Scan license plate"
+            >
+              <FaSearch /> Scan Plate
+            </button>
+          </div>
+        )}
+      </div>
+      
+      {isProcessing && (
+        <div className="processing-overlay">
+          <div className="processing-indicator">Scanning license plate...</div>
+        </div>
+      )}
+    </div>
+  );
+
+  let mainContent;
+  if (isCameraActive && !selectedImage) {
+    mainContent = renderCameraView();
+  } else if (!selectedImage) {
+    mainContent = renderUploadPlaceholder();
+  } else {
+    mainContent = renderImagePreview();
+  }
+
   return (
     <div className="image-upload-container">
       <input
@@ -208,85 +327,7 @@ export default function ImageUpload({ onLicensePlateDetected, onImageSelected })
         className="file-input"
       />
       
-      {isCameraActive && !selectedImage ? (
-        <div className="camera-view">
-          <video
-            ref={videoRef}
-            autoPlay
-            playsInline
-            muted
-            className="camera-preview"
-          />
-          <div className="camera-controls">
-            <button type="button" onClick={handleCapture} className="capture-button">
-              <FaCamera />
-            </button>
-            <button type="button" onClick={stopCamera} className="cancel-button">
-              <MdCancel />
-            </button>
-          </div>
-        </div>
-      ) : !selectedImage ? (
-        <div className="upload-placeholder">
-          <div className="upload-buttons">
-            <button type="button" onClick={handleUploadClick} className="upload-button">
-              <FaUpload className="upload-icon" />
-              <span>Upload Photo</span>
-            </button>
-            <button type="button" onClick={handleCameraClick} className="camera-button">
-              <FaCamera className="camera-icon" />
-              <span>Take Photo</span>
-            </button>
-          </div>
-          <small>Select a photo or take one with your camera</small>
-        </div>
-      ) : (
-        <div className="image-preview-container">
-          <div className="image-wrapper">
-            <img src={previewUrl} alt="Selected car" className="image-preview" />
-            {detectionBox && (
-              <div 
-                className="detection-box"
-                style={{
-                  left: `${detectionBox.xmin}%`,
-                  top: `${detectionBox.ymin}%`,
-                  width: `${detectionBox.xmax - detectionBox.xmin}%`,
-                  height: `${detectionBox.ymax - detectionBox.ymin}%`
-                }}
-              />
-            )}
-          </div>
-          
-          <div className="image-actions">
-            <button 
-              type="button" 
-              className="clear-button" 
-              onClick={handleClear}
-              aria-label="Clear image"
-            >
-              <MdCancel />
-            </button>
-            
-            {onLicensePlateDetected && (
-              <button 
-                type="button" 
-                className="scan-button" 
-                onClick={handleRetry}
-                disabled={isProcessing}
-                aria-label="Scan license plate"
-              >
-                <FaCamera /> Scan Plate
-              </button>
-            )}
-          </div>
-          
-          {isProcessing && (
-            <div className="processing-overlay">
-              <div className="processing-indicator">Scanning license plate...</div>
-            </div>
-          )}
-        </div>
-      )}
+      {mainContent}
       
       {error && (
         <div className="upload-error">

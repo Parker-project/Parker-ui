@@ -88,6 +88,7 @@
   right: 0;
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 20px;
   padding: 10px;
   z-index: 10;
@@ -104,12 +105,12 @@
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s ease;
+  font-size: 24px;
 }
 
 .capture-button {
   background-color: #fff;
   color: #4CAF50;
-  font-size: 24px;
 }
 
 .capture-button:hover {
@@ -120,7 +121,6 @@
 .cancel-button {
   background-color: rgba(255,255,255,0.2);
   color: #fff;
-  font-size: 24px;
 }
 
 .cancel-button:hover {
@@ -167,7 +167,14 @@
   align-items: center;
 }
 
+/* Group for clear and recapture buttons */
+.left-actions-group {
+  display: flex;
+  gap: 8px;
+}
+
 .clear-button,
+.recapture-button,
 .scan-button {
   background: none;
   border: none;
@@ -182,21 +189,35 @@
   transition: all 0.2s ease;
 }
 
-.clear-button:hover {
+.clear-button:hover,
+.recapture-button:hover {
   background-color: rgba(255,255,255,0.1);
 }
 
-.scan-button {
+.recapture-button {
+  padding: 8px;
+  width: 36px;
+  height: 36px;
+  justify-content: center;
+}
+
+.primary-scan-button {
   background-color: #4CAF50;
 }
 
-.scan-button:hover {
+.primary-scan-button:hover {
   background-color: #45a049;
 }
 
 .scan-button:disabled {
   background-color: #cccccc;
   cursor: not-allowed;
+}
+
+.scan-actions-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }
 
 .processing-overlay {

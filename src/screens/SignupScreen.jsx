@@ -17,10 +17,8 @@ export default function SignupScreen({ setUser, setIsAuth }) {
     e.preventDefault();
     setError('');
     setIsLoading(true);
-    console.log('Submitting signup form:', { firstName, lastName, email });
   
     try {
-      console.log('Sending request to:', `${API_BASE_URL}/auth/signup`);
       const res = await fetch(`${API_BASE_URL}/auth/signup`, {
         method: 'POST',
         headers: {
@@ -35,15 +33,12 @@ export default function SignupScreen({ setUser, setIsAuth }) {
         }),
       });
       
-      console.log('Response status:', res.status);
-  
       if (res.ok) {
         // Only try reading body if needed, otherwise just navigate
         try {
           const text = await res.text();
           if (text) {
             const data = JSON.parse(text);
-            console.log('Parsed response:', data);
             if (data && data.token) {
               localStorage.setItem('user', JSON.stringify(data));
               handleSuccessfulSignup(data);
@@ -58,7 +53,6 @@ export default function SignupScreen({ setUser, setIsAuth }) {
         let errorMessage = 'Signup failed';
         try {
           const text = await res.text();
-          console.log('Error response text:', text);
           const data = text ? JSON.parse(text) : {};
           if (data.message) {
             errorMessage = data.message;
