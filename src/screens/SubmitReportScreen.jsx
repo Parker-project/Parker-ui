@@ -229,18 +229,13 @@ export default function SubmitReportScreen() {
         addressInput: '',
         image: null
       });
-          location: null,
-      } else {
-        try {
-            ...prev, 
     } catch (err) {
       setUiState(prev => ({ 
         ...prev, 
-        error: 'Submit failed. Please try again later.' 
+        error: err.message || 'Failed to submit report. Please try again later.' 
       }));
     }
   };
-
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
