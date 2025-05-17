@@ -137,6 +137,13 @@ body {
   box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
 }
 
+.form-helper-text {
+  font-size: 0.8rem;
+  color: #666;
+  margin-top: 0.25rem;
+  display: block;
+}
+
 /* Utility classes */
 .text-center {
   text-align: center;

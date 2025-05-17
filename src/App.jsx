@@ -38,61 +38,101 @@ function AppContent() {
   useEffect(() => {
     // Skip verification entirely if we're already on login page to prevent loops
     if (location.pathname === '/login') {
-      console.log('Already on login page, skipping verification');
       setIsVerifyingAuth(false);
       return;
     }
-    
+
     const verifyAuth = async () => {
       setIsVerifyingAuth(true);
-      console.log('Verifying authentication status...');
       
       // First try to get user from localStorage
       const storedUser = localStorage.getItem('user');
-      
+      console.log('Stored user in localStorage:', storedUser ? 'exists' : 'not found');
+
       if (!storedUser) {
-        console.log('No stored user found');
+        // If no user in localStorage, try to get from server using cookie
+        try {
+          console.log('No stored user, checking server...');
+          const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/user/profile`, {
+            credentials: 'include'
+          });
+
+          if (response.ok) {
+            const userData = await response.json();
+
+            // Create complete user object
+            const completeUserData = {
+              ...userData,
+              isEmailVerified: userData.isEmailVerified,
+              provider: userData.provider || 'local' // Default to 'local' if not specified
+            };
+
+            localStorage.setItem('user', JSON.stringify(completeUserData));
+            setUser(completeUserData);
+            setIsAuth(true);
+            setIsVerifyingAuth(false);
+            return;
+          }
+        } catch (error) {
+          console.error('Failed to get user from server:', error);
+        }
+
+        // If we get here, we couldn't get the user data
+        console.log('No stored user found, clearing auth state');
         setUser(null);
         setIsAuth(false);
         setIsVerifyingAuth(false);
         return;
       }
-      
+
       // Parse stored user data
       try {
         const userData = JSON.parse(storedUser);
+        console.log('Parsed user data:', userData);
         setUser(userData); // Set user from localStorage first
-        
+
         // Skip verification if we're already on login, signup, or verification pages
         const currentPath = location.pathname;
-        const isPublicRoute = currentPath === '/' || 
-                            currentPath === '/login' || 
-                            currentPath === '/signup' || 
-                            currentPath.includes('/verify-email');
-        
+        const isPublicRoute = currentPath === '/' ||
+          currentPath === '/login' ||
+          currentPath === '/signup' ||
+          currentPath.includes('/verify-email');
+
         if (isPublicRoute) {
-          console.log('On public route, skipping server verification');
           setIsAuth(true); // Temporarily set as authenticated
           setIsVerifyingAuth(false);
           return;
         }
-        
+
         // Then verify with the server that the user is still authenticated
         try {
           console.log('Verifying authentication with server...');
-          await getUserProfile();
-          console.log('Server verification successful');
+          const profileData = await getUserProfile();
+          console.log('Server verification successful:', profileData);
+
+          // Update user data with the complete profile data
+          const updatedUserData = {
+            ...userData,
+            ...profileData,
+            isEmailVerified: profileData.isEmailVerified,
+            provider: profileData.provider || 'local' // Default to 'local' if not specified
+          };
+
+          // Update localStorage with complete user data
+          localStorage.setItem('user', JSON.stringify(updatedUserData));
+          setUser(updatedUserData);
           setIsAuth(true);
         } catch (error) {
           console.error('Server verification failed:', error);
-          
+
           // If on a protected route, redirect to login
           if (!isPublicRoute) {
+            console.log('Clearing user data and redirecting to login');
             localStorage.removeItem('user');
             setUser(null);
             setIsAuth(false);
-            navigate('/login', { 
-              state: { message: 'Your session has expired. Please log in again.' } 
+            navigate('/login', {
+              state: { message: 'Your session has expired. Please log in again.' }
             });
           }
         }
@@ -102,7 +142,7 @@ function AppContent() {
         setUser(null);
         setIsAuth(false);
       }
-      
+
       setIsVerifyingAuth(false);
     };
 
@@ -119,16 +159,16 @@ function AppContent() {
       localStorage.removeItem('user');
       setUser(null);
       setIsAuth(false);
-      
+
       if (location.pathname !== '/login') {
-        navigate('/login', { 
-          state: { message: 'Your session has expired. Please log in again.' } 
+        navigate('/login', {
+          state: { message: 'Your session has expired. Please log in again.' }
         });
       }
     };
-    
+
     window.addEventListener('session_expired', handleSessionExpiredEvent);
-    
+
     return () => {
       window.removeEventListener('session_expired', handleSessionExpiredEvent);
     };
@@ -228,9 +268,9 @@ function AppContent() {
 
 function App() {
   return (
-      <div className="app">
-        <AppContent />
-      </div>
+    <div className="app">
+      <AppContent />
+    </div>
   );
 }
 

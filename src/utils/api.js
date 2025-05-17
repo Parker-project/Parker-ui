@@ -63,6 +63,15 @@ export const apiRequest = async (endpoint, options = {}) => {
       }
     }
 
+    // For non-JSON responses (like file uploads), return the response directly
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`);
+      }
+      return response;
+    }
+
     const data = await response.json();
     if (!response.ok) {
       throw new Error(data.message || 'Something went wrong');
@@ -110,10 +119,14 @@ export const logout = async () => {
 };
 
 export const submitReport = async (reportData) => {
-  return apiRequest('/reports', {
-    method: 'POST',
-    body: JSON.stringify(reportData),
-  });
+  try {
+    return apiRequest('/reports', {
+      method: 'POST',
+      body: JSON.stringify(reportData),
+    });
+  } catch (error) {
+    throw error;
+  }
 };
 
 export const getReports = async (userId) => {
@@ -124,13 +137,11 @@ export const getUserProfile = async () => {
   try {
     try {
       const response = await apiRequest('/user/profile');
-      console.log('Authentication check successful:', response);
       return response;
     } catch (profileError) {
       // If user/profile fails, try auth/me as a fallback
-      console.log('Profile endpoint failed, trying auth/me endpoint...');
       const response = await apiRequest('/auth/me');
-      console.log('Authentication check successful with auth/me:', response);
+
       return response;
     }
   } catch (error) {
@@ -142,4 +153,85 @@ export const getUserProfile = async () => {
     
     throw error;
   }
+};
+
+// OCR
+/**
+ * Sends an image to the OCR service to extract license plate number
+ * @param {File} imageFile - The image file (jpeg, jpg, or png)
+ * @returns {Promise<Object>} - The OCR response with extracted license plate
+ */
+export const detectLicensePlate = async (imageFile) => {
+  const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+  if (!validTypes.includes(imageFile.type)) {
+    throw new Error('Invalid file type. Please upload a JPEG or PNG image.');
+  }
+  
+  const formData = new FormData();
+  formData.append('image', imageFile, imageFile.name || 'image.jpg');
+  
+  try {
+    const response = await fetch(`${API_BASE_URL}/ocr/license-plate`, {
+      method: 'POST',
+      body: formData,
+      credentials: 'include',
+      mode: 'cors'
+    });
+    
+    const responseText = await response.text();
+    
+    if (!response.ok) {
+      if (responseText.startsWith('{') && responseText.endsWith('}')) {
+        const errorData = JSON.parse(responseText);
+        throw new Error(errorData.message || `OCR failed with status: ${response.status}`);
+      }
+      throw new Error(`OCR service error (${response.status}): ${responseText || response.statusText}`);
+    }
+    
+    if (!responseText || responseText.trim() === '') {
+      throw new Error('The OCR service returned an empty response. Please try a different image.');
+    }
+    
+    try {
+      return JSON.parse(responseText);
+    } catch (jsonError) {
+      if (/^[a-zA-Z0-9-]+$/.test(responseText.trim())) {
+        return { 
+          success: true,
+          licensePlate: {
+            plate: responseText.trim(),
+            score: 1.0
+          }
+        };
+      }
+      throw new Error('Unable to read the OCR service response. Please try again with a clearer image.');
+    }
+  } catch (error) {
+    throw error;
+  }
+};
+
+/**
+ * Extracts the license plate number from OCR results
+ * @param {Object} ocrResults - The results from the OCR API
+ * @returns {string|null} - The detected license plate or null if not found/invalid
+ */
+export const getHighestConfidencePlate = (ocrResults) => {
+  if (!ocrResults || typeof ocrResults !== 'object') {
+    return null;
+  }
+
+  // Handle the standard response format
+  if (ocrResults.success && ocrResults.licensePlate?.plate) {
+    const plate = ocrResults.licensePlate.plate;
+    return /^\d{6,8}$/.test(plate) ? plate : null;
+  }
+
+  // Handle direct plate in root (fallback)
+  if (ocrResults.plate) {
+    const plate = ocrResults.plate;
+    return /^\d{6,8}$/.test(plate) ? plate : null;
+  }
+
+  return null;
 };

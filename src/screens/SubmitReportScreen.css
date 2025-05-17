@@ -254,6 +254,35 @@
   background-color: white;
 }
 
+/* OCR Feature Styles */
+.ocr-success {
+  color: var(--success-color);
+  display: inline-flex;
+  align-items: center;
+  font-weight: 600;
+  margin-left: 10px;
+  animation: fadeIn 0.5s ease;
+}
+
+.ocr-success svg {
+  margin-right: 5px;
+}
+
+.success-message.ocr-success {
+  background-color: rgba(39, 174, 96, 0.15);
+  border-left: 4px solid var(--success-color);
+  font-weight: 600;
+  padding: 12px 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.success-message.ocr-success svg {
+  margin-right: 8px;
+  font-size: 18px;
+}
+
 /* Responsive design */
 @media (max-width: 650px) {
   .report-container {
@@ -284,5 +313,9 @@
     width: 36px;
     right: 8px;
     font-size: 14px;
+  }
+  
+  .image-preview {
+    max-height: 200px;
   }
 } 

@@ -1,0 +1,256 @@
+.image-upload-container {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.file-input {
+  display: none;
+}
+
+.upload-placeholder {
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  background-color: #f8f9fa;
+  transition: all 0.3s ease;
+}
+
+.upload-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.upload-button,
+.camera-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 6px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.upload-button:hover,
+.camera-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.upload-button {
+  color: #2196F3;
+}
+
+.camera-button {
+  color: #4CAF50;
+}
+
+.upload-icon,
+.camera-icon {
+  font-size: 24px;
+}
+
+.upload-placeholder small {
+  display: block;
+  color: #666;
+  margin-top: 10px;
+}
+
+/* Camera View Styles */
+.camera-view {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  background-color: #000;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.camera-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.camera-controls {
+  position: absolute;
+  bottom: 20px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  padding: 10px;
+  z-index: 10;
+}
+
+.capture-button,
+.cancel-button {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 24px;
+}
+
+.capture-button {
+  background-color: #fff;
+  color: #4CAF50;
+}
+
+.capture-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 20px rgba(255,255,255,0.3);
+}
+
+.cancel-button {
+  background-color: rgba(255,255,255,0.2);
+  color: #fff;
+}
+
+.cancel-button:hover {
+  background-color: rgba(255,255,255,0.3);
+}
+
+.image-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.detection-box {
+  position: absolute;
+  border: 2px solid rgba(255, 0, 0, 0.5);
+  background-color: rgba(255, 0, 0, 0.2);
+  pointer-events: none;
+  z-index: 1;
+  box-shadow: 0 0 0 2px rgba(255, 0, 0, 0.1);
+}
+
+.image-preview-container {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.image-preview {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.image-actions {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 10px;
+  background: linear-gradient(transparent, rgba(0,0,0,0.7));
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Group for clear and recapture buttons */
+.left-actions-group {
+  display: flex;
+  gap: 8px;
+}
+
+.clear-button,
+.recapture-button,
+.scan-button {
+  background: none;
+  border: none;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.clear-button:hover,
+.recapture-button:hover {
+  background-color: rgba(255,255,255,0.1);
+}
+
+.recapture-button {
+  padding: 8px;
+  width: 36px;
+  height: 36px;
+  justify-content: center;
+}
+
+.primary-scan-button {
+  background-color: #4CAF50;
+}
+
+.primary-scan-button:hover {
+  background-color: #45a049;
+}
+
+.scan-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.scan-actions-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.processing-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.processing-indicator {
+  background-color: white;
+  padding: 12px 20px;
+  border-radius: 4px;
+  color: #333;
+  font-weight: 500;
+}
+
+.upload-error {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #ffebee;
+  border-radius: 4px;
+  color: #c62828;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.error-icon {
+  flex-shrink: 0;
+} 

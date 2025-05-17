@@ -21,7 +21,7 @@ export default function LoginScreen({ setUser, setIsAuth }) {
   const handleSendResetEmail = async () => {
     setIsSendingReset(true);
     setResetMessage('');
-  
+    console.log('Sending reset email for:', resetEmail);
     try {
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/request-password-reset`, {
         method: 'POST',

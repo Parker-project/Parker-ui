@@ -14,11 +14,7 @@ export default function VerifyTokenScreen({ setUser }) {
 
   useEffect(() => {
     const verifyToken = async () => {
-      console.log('Current URL:', window.location.href);
-      console.log('Search params:', location.search);
-
       const token = searchParams.get('token') || searchParams.get('verificationToken') || tokenFromPath;
-      console.log('Token from URL:', token);
 
       if (!token) {
         setStatus('error');
@@ -27,13 +23,10 @@ export default function VerifyTokenScreen({ setUser }) {
       }
 
       try {
-        console.log('Sending verification request with token in URL path:', token);
         const response = await fetch(`${API_BASE_URL}/auth/verify-email/${token}`, {
           method: 'GET',
           credentials: 'include',
         });
-
-        console.log('Response status:', response.status);
 
         let data = {};
         try {
@@ -45,7 +38,6 @@ export default function VerifyTokenScreen({ setUser }) {
 
         if (response.ok) {
           setStatus('success');
-          console.log('Verification successful');
 
           if (setUser && data.user) {
             const updatedUser = {
