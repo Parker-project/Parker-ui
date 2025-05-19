@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import ResetPasswordScreen from './screens/ResetPasswordScreen';
 import Navbar from './components/Navbar';
 import PageWrapper from './components/PageWrapper';
 import SignupScreen from './screens/SignupScreen';
@@ -30,7 +31,7 @@ function AppContent() {
   const [isVerifyingAuth, setIsVerifyingAuth] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
-  const hideNavbarOn = ['/verify-email'];
+  const hideNavbarOn = ['/verify-email', '/reset-password'];
 
   // Verify authentication status on app load or refresh
   useEffect(() => {
@@ -94,7 +95,9 @@ function AppContent() {
         const isPublicRoute = currentPath === '/' ||
           currentPath === '/login' ||
           currentPath === '/signup' ||
-          currentPath.includes('/verify-email');
+          currentPath.includes('/verify-email') ||
+          currentPath.startsWith('/reset-password');
+
 
         if (isPublicRoute) {
           setIsAuth(true); // Temporarily set as authenticated
@@ -188,6 +191,15 @@ function AppContent() {
       )}
       <PageWrapper>
         <Routes>
+
+        <Route path="/debug-reset" element={
+          <div style={{ padding: '2rem', textAlign: 'center' }}>
+            <h1 style={{ color: 'green' }}>✅ Debug Reset Page</h1>
+          </div>
+        } />
+
+
+          <Route path="/reset-password" element={<ResetPasswordScreen />} />
           {/* Public Routes */}
           <Route path="/" element={<LandingPage user={user} />} />
           <Route path="/signup" element={<SignupScreen setUser={setUser} setIsAuth={setIsAuth} />} />
@@ -244,10 +256,11 @@ function AppContent() {
           />
 
           {/* Fallback Route */}
-          <Route path="*" element={<h2>404 - Page Not Found</h2>} />
 
-          <Route path="/verify-email/:token" element={<VerifyTokenScreen setUser={setUser} />} />
 
+          {/* <Route path="*" element={<h2>404 - Page Not Found</h2>} /> */}
+
+          
 
         </Routes>
       </PageWrapper>
