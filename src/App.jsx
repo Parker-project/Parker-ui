@@ -17,6 +17,7 @@ import MyReportsScreen from './screens/MyReportsScreen';
 import DashboardScreen from './screens/DashboardScreen';
 import AdminDashboardScreen from './screens/AdminDashboardScreen';
 import MapViewScreen from './screens/AdminMapViewScreen';
+import ResetPasswordScreen from './screens/ResetPasswordScreen';
 import { getUserProfile } from './utils/api';
 import './App.css';
 
@@ -259,6 +260,8 @@ function AppContent() {
 
           <Route path="/verify-email/:token" element={<VerifyTokenScreen setUser={setUser} />} />
 
+          <Route path="/reset-password/:token" element={<ResetPasswordScreen />} />
+  
 
         </Routes>
       </PageWrapper>
