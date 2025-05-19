@@ -1,11 +1,12 @@
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FaCarAlt, FaClipboardList, FaUserAlt, FaSignOutAlt } from 'react-icons/fa';
+import { FaCarAlt, FaClipboardList, FaSitemap, FaSignOutAlt } from 'react-icons/fa';
 import parkingIcon from '../assets/parking-icon.png';
 import { logout } from '../utils/api';
 import './DashboardScreen.css';
 
-export default function DashboardScreen({ user, setUser, setIsAuth }) {
+
+export default function DashboardScreen({ user, setUser, setIsAuth, isAuth, isVerifyingAuth }) {
   const navigate = useNavigate();
   
   const handleLogout = async () => {
@@ -38,36 +39,59 @@ export default function DashboardScreen({ user, setUser, setIsAuth }) {
   };
 
   // Dashboard card configurations
-  const dashboardCards = [
-    {
-      id: 'report-violation',
-      icon: <FaCarAlt />,
-      title: 'Report Violation',
-      description: 'Submit a new parking violation report',
-      action: () => navigate('/submit-report')
-    },
-    {
-      id: 'my-reports',
-      icon: <FaClipboardList />,
-      title: 'My Reports',
-      description: 'View your submitted reports and their status',
-      action: () => navigate('/my-reports')
-    },
-    // {
-    //   id: 'profile',
-    //   icon: <FaUserAlt />,
-    //   title: 'Profile',
-    //   description: 'Update your personal information',
-    //   action: () => navigate('/profile')
-    // },
-    {
-      id: 'logout',
-      icon: <FaSignOutAlt />,
-      title: 'Logout',
-      description: 'Sign out of your account',
-      action: handleLogout
+  const dashboardCards = (() => {
+    const isInspector = user?.role === 'inspector';
+  
+    if (isInspector) {
+      return [
+        {
+          id: 'inspector-dashboard',
+          icon: <FaClipboardList />,
+          title: 'Reports Dashboard',
+          description: 'Manage and view all assigned reports',
+          action: () => navigate('/inspector-all-reports')
+        },
+        {
+          id: 'logout',
+          icon: <FaSignOutAlt />,
+          title: 'Logout',
+          description: 'Sign out of your account',
+          action: handleLogout
+        },
+        {
+          id: 'report-map-view',
+          icon: <FaSitemap />,
+          title: 'Report Map View',
+          description: 'View all submitted reports on a map',
+          action: () => navigate('/inspector-map-view')
+        }
+      ];
     }
-  ];
+  
+    return [
+      {
+        id: 'report-violation',
+        icon: <FaCarAlt />,
+        title: 'Report Violation',
+        description: 'Submit a new parking violation report',
+        action: () => navigate('/submit-report')
+      },
+      {
+        id: 'my-reports',
+        icon: <FaClipboardList />,
+        title: 'My Reports',
+        description: 'View your submitted reports and their status',
+        action: () => navigate('/my-reports')
+      },
+      {
+        id: 'logout',
+        icon: <FaSignOutAlt />,
+        title: 'Logout',
+        description: 'Sign out of your account',
+        action: handleLogout
+      }
+    ];
+  })();
 
   const getUserFirstName = () => {
     return user?.user?.firstName || user?.sanitizedUser?.firstName || 'User';

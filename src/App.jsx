@@ -15,6 +15,7 @@ import InspectorDashboardScreen from './screens/InspectorDashboardScreen';
 import LandingPage from './screens/LandingPage';
 import MyReportsScreen from './screens/MyReportsScreen';
 import DashboardScreen from './screens/DashboardScreen';
+import InspectorMapViewScreen from './screens/InspectorMapViewScreen';
 import { getUserProfile } from './utils/api';
 import './App.css';
 
@@ -25,7 +26,7 @@ export const handleSessionExpired = () => {
 };
 
 function AppContent() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(null); 
   const [isAuth, setIsAuth] = useState(false);
   const [isVerifyingAuth, setIsVerifyingAuth] = useState(true);
   const location = useLocation();
@@ -202,7 +203,7 @@ function AppContent() {
             path="/dashboard"
             element={
               <RequireAuth user={user} isAuth={isAuth} isVerifyingAuth={isVerifyingAuth}>
-                <DashboardScreen user={user} setUser={setUser} setIsAuth={setIsAuth} />
+                <DashboardScreen user={user} setUser={setUser} setIsAuth={setIsAuth} isAuth={isAuth} isVerifyingAuth={isVerifyingAuth}/>
               </RequireAuth>
             }
           />
@@ -226,10 +227,19 @@ function AppContent() {
           />
 
           <Route
-            path="/inspector"
+            path="/inspector-all-reports"
             element={
               <RequireInspector user={user} isAuth={isAuth} isVerifyingAuth={isVerifyingAuth}>
                 <InspectorDashboardScreen user={user} />
+              </RequireInspector>
+            }
+          />
+
+          <Route
+            path="/inspector-map-view"
+            element={
+              <RequireInspector user={user} isAuth={isAuth} isVerifyingAuth={isVerifyingAuth}>
+                <InspectorMapViewScreen user={user} />
               </RequireInspector>
             }
           />
