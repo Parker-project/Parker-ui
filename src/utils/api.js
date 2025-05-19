@@ -236,3 +236,24 @@ export const getHighestConfidencePlate = (ocrResults) => {
 
   return null;
 };
+
+export const getAllReports = async => {
+  const endpoint = `/reports`;
+  return apiRequest(endpoint);
+};
+
+
+export const updateReportStatus = async (reportId, newStatus) => {
+  const endpoint = `/reports/${reportId}/status`;
+  const res = await apiRequest(endpoint, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ status: newStatus }),
+  });
+
+  if (!res.ok) throw new Error('Failed to update status');
+
+  return await res.json();
+}

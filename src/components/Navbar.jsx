@@ -99,7 +99,7 @@ export default function Navbar({ user, setUser }) {
         ) : (
           <>
             {authenticatedLinks.map(renderNavLink)}
-            {user.role === 'inspector' && renderNavLink(inspectorLink)}
+            {/* {user.role === 'inspector' && renderNavLink(inspectorLink)} */}
             {renderNavLink(logoutAction, 'logout')}
           </>
         )}

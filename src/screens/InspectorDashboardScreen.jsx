@@ -1,108 +1,157 @@
-import { useEffect, useState } from 'react';
-import PageWrapper from '../components/PageWrapper';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { getAllReports, updateReportStatus } from '../utils/api'; 
+import './InspectorScreen.css';
 
-export default function InspectorDashboardScreen() {
+//
+
+const InspectorDashboard = () => {
   const [reports, setReports] = useState([]);
+  const [filteredReports, setFilteredReports] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState(null);
+  const [selectedStatus, setSelectedStatus] = useState('ALL');
+  const [editingReportId, setEditingReportId] = useState(null);
+
+
 
   useEffect(() => {
-    fetch('http://localhost:3000/api/reports', {
-      credentials: 'include',
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setReports(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error('Error fetching reports:', err);
-        setError('Failed to load reports');
-        setLoading(false);
-      });
+    filterReports();
+  }, [reports, selectedStatus]);
+
+  useEffect(() => {
+    fetchReports();
   }, []);
-
-  const handleMarkAsHandled = async (id) => {
+  
+  const fetchReports = async () => {
     try {
-      const response = await fetch(`http://localhost:3000/api/reports/${id}/status`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          handled: true
-        }),
-      });
+      setLoading(true);
+      const data = await getAllReports();
+      setReports(Array.isArray(data) ? data : []);
+      setError(null);
+    } catch (err) {
+      console.error('Error fetching reports:', err);
+      setError(err.message || 'Failed to load reports. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-      if (!response.ok) throw new Error('Failed to mark as handled');
+  const filterReports = () => {
+    if (selectedStatus === 'ALL') {
+      setFilteredReports(reports);
+    } else {
+      setFilteredReports(reports.filter(r => r.status === selectedStatus));
+    }
+  };
 
-      const updated = await response.json();
-
-      // Update the report in local state
-      setReports((prev) =>
-        prev.map((r) => (r.id === id ? { ...r, handled: true } : r))
+  const handleUpdateStatus = async (reportId, newStatus) => {
+    try {
+      setUpdating(reportId);
+      await updateReportStatus(reportId, newStatus);
+      const updatedReports = reports.map(r =>
+        r._id === reportId ? { ...r, status: newStatus } : r
       );
+      setReports(updatedReports); // triggers re-filtering
     } catch (err) {
-      alert('Error: Could not update report');
+      console.error('Error updating report status:', err);
+      alert('Failed to update status');
+    } finally {
+      setUpdating(null);
     }
   };
+  
 
-  const handleDeleteReport = async (id) => {
-    try {
-      const response = await fetch(`http://localhost:3000/api/reports/${id}`, {
-        method: 'DELETE',
-        credentials: 'include',
-      });
-
-      if (!response.ok) throw new Error('Failed to delete report');
-
-      // Remove the deleted report from local state
-      setReports((prev) => prev.filter((r) => r.id !== id));
-    } catch (err) {
-      alert('Error: Could not delete report');
-    }
+  const handleStatusChange = (e) => {
+    setSelectedStatus(e.target.value);
   };
 
+  const renderStatusBadge = (status) => {
+    const lower = status.toLowerCase();
+    return <span className={`status-badge ${lower}`}>{status}</span>;
+  };
+  const navigate = useNavigate();
   return (
-    <PageWrapper>
-      <h2 className="text-2xl font-bold mb-4 text-center text-blue-600">📋 Reports To Handle</h2>
-
-      {loading && <p className="text-center">Loading...</p>}
-      {error && <p className="text-center text-red-600">{error}</p>}
-
-      <div className="space-y-4">
-        {reports.length === 0 && !loading && <p className="text-center">No reports available.</p>}
-
-        {reports.map((report) => (
-          <div
-            key={report.id}
-            className="border border-gray-300 p-4 rounded-lg shadow-sm bg-white"
-          >
-            <p><strong>Plate:</strong> {report.licensePlate}</p>
-            <p><strong>Notes:</strong> {report.notes || '-'}</p>
-            <p><strong>Status:</strong> {report.handled ? '✅ Handled' : '❌ Pending'}</p>
-            <p><strong>Time:</strong> {new Date(report.timestamp).toLocaleString()}</p>
-
-            <div className="flex gap-2 mt-4">
-              {!report.handled && (
-                <button
-                  onClick={() => handleMarkAsHandled(report.id)}
-                  className="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700"
-                >
-                  Mark as Handled
-                </button>
-              )}
-              <button
-                onClick={() => handleDeleteReport(report.id)}
-                className="bg-red-600 text-white px-4 py-1 rounded hover:bg-red-700"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        ))}
+    <div className="page-container">
+      <div className="page-header">
+        <button className="btn back-btn" onClick={() => navigate(-1)}>⬅</button>
+        <h2>Reports Dashboard</h2>
       </div>
-    </PageWrapper>
+
+      <div className="dashboard-button-container">
+        <select className="dashboard-btn" value={selectedStatus} onChange={handleStatusChange}>
+          <option value="ALL">All Statuses</option>
+          <option value="pending">Pending</option>
+          <option value="resolved">Resolved</option>
+          <option value="rejected">Rejected</option>
+        </select>
+      </div>
+
+      {loading ? (
+        <div className="loading-state">Loading reports...</div>
+      ) : error ? (
+        <div className="error-state">
+          {error}
+          <button className="retry-btn" onClick={fetchReports}>Retry</button>
+        </div>
+      ) : filteredReports.length === 0 ? (
+        <div className="empty-state">
+          <p>No reports found for selected status.</p>
+        </div>
+      ) : (
+        <div className="reports-list">
+          {filteredReports.map((report, index) => (
+            <div
+            className={`report-card ${editingReportId === report._id ? 'selected' : ''}`}
+            key={report._id}
+            onClick={() => setEditingReportId(report._id)}
+            style={{ cursor: 'pointer' }}
+            >
+              <div className="report-title">
+                #{index +1} — {report.description}
+              </div>
+              <div className="report-details">
+                <strong>License plate:</strong> {report.liscensePlateNumber}
+              </div>
+              <div className="report-details">
+                <strong>Description:</strong> {report.description}
+              </div>
+              <div className="report-details">
+                <strong>Location:</strong> {report.location.address}
+              </div>
+              <div className="report-details">
+                <strong>Date:</strong> {new Date(report.createdAt).toLocaleString()}
+              </div>
+              <div className="report-details">
+                <strong>Status:</strong>{' '}
+                {editingReportId === report._id ? (
+                  <select
+                    value={report.status}
+                    onChange={async (e) => {
+                      const newStatus = e.target.value;
+                      if (newStatus !== report.status) {
+                        await handleUpdateStatus(report._id, newStatus);
+                      }
+                      setEditingReportId(null); // Done editing
+                    }}
+                    onClick={(e) => e.stopPropagation()} // Prevent card click while changing
+                    autoFocus
+                  >
+                    <option value="pending">Pending</option>
+                    <option value="resolved">Resolved</option>
+                    <option value="rejected">Rejected</option>
+                  </select>
+                ) : (
+                  renderStatusBadge(report.status)
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+    </div>
   );
-}
+};
+
+export default InspectorDashboard;
