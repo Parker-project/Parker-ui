@@ -1,6 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import ResetPasswordScreen from './screens/ResetPasswordScreen';
 import Navbar from './components/Navbar';
 import PageWrapper from './components/PageWrapper';
 import SignupScreen from './screens/SignupScreen';
@@ -12,10 +11,13 @@ import ResendVerificationScreen from './screens/ResendVerificationScreen';
 import RequireAuth from './components/RequireAuth';
 import RequireInspector from './components/RequireInspector';
 import ReportDetail from './screens/ReportDetail';
-import InspectorDashboardScreen from './screens/InspectorDashboardScreen';
+import AdminDashboard from './screens/InspectorDashboardScreen';
 import LandingPage from './screens/LandingPage';
 import MyReportsScreen from './screens/MyReportsScreen';
 import DashboardScreen from './screens/DashboardScreen';
+import AdminDashboardScreen from './screens/AdminDashboardScreen';
+import MapViewScreen from './screens/AdminMapViewScreen';
+import ResetPasswordScreen from './screens/ResetPasswordScreen';
 import { getUserProfile } from './utils/api';
 import './App.css';
 
@@ -31,7 +33,7 @@ function AppContent() {
   const [isVerifyingAuth, setIsVerifyingAuth] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
-  const hideNavbarOn = ['/verify-email', '/reset-password'];
+  const hideNavbarOn = ['/verify-email'];
 
   // Verify authentication status on app load or refresh
   useEffect(() => {
@@ -95,9 +97,7 @@ function AppContent() {
         const isPublicRoute = currentPath === '/' ||
           currentPath === '/login' ||
           currentPath === '/signup' ||
-          currentPath.includes('/verify-email') ||
-          currentPath.startsWith('/reset-password');
-
+          currentPath.includes('/verify-email');
 
         if (isPublicRoute) {
           setIsAuth(true); // Temporarily set as authenticated
@@ -191,15 +191,6 @@ function AppContent() {
       )}
       <PageWrapper>
         <Routes>
-
-        <Route path="/debug-reset" element={
-          <div style={{ padding: '2rem', textAlign: 'center' }}>
-            <h1 style={{ color: 'green' }}>✅ Debug Reset Page</h1>
-          </div>
-        } />
-
-
-          <Route path="/reset-password" element={<ResetPasswordScreen />} />
           {/* Public Routes */}
           <Route path="/" element={<LandingPage user={user} />} />
           <Route path="/signup" element={<SignupScreen setUser={setUser} setIsAuth={setIsAuth} />} />
@@ -238,11 +229,20 @@ function AppContent() {
           />
 
           <Route
-            path="/inspector"
+            path="/admin/dashboard"
             element={
-              <RequireInspector user={user} isAuth={isAuth} isVerifyingAuth={isVerifyingAuth}>
-                <InspectorDashboardScreen user={user} />
-              </RequireInspector>
+              <RequireAuth user={user} isAuth={isAuth} isVerifyingAuth={isVerifyingAuth}>
+                <AdminDashboardScreen/>
+              </RequireAuth>
+            }
+          />
+
+          <Route
+            path="/admin/map-view"
+            element={
+              <RequireAuth user={user} isAuth={isAuth} isVerifyingAuth={isVerifyingAuth}>
+                <MapViewScreen /> /
+              </RequireAuth>
             }
           />
 
@@ -256,11 +256,12 @@ function AppContent() {
           />
 
           {/* Fallback Route */}
+          <Route path="*" element={<h2>404 - Page Not Found</h2>} />
 
+          <Route path="/verify-email/:token" element={<VerifyTokenScreen setUser={setUser} />} />
 
-          {/* <Route path="*" element={<h2>404 - Page Not Found</h2>} /> */}
-
-          
+          <Route path="/reset-password/:token" element={<ResetPasswordScreen />} />
+  
 
         </Routes>
       </PageWrapper>
