@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
+  appType: 'spa', // <-- This makes Vite handle deep links like /reset-password/:token
   server: {
     proxy: {
       '/api': {
