@@ -45,7 +45,7 @@ function AppContent() {
 
     const verifyAuth = async () => {
       setIsVerifyingAuth(true);
-      
+
       // First try to get user from localStorage
       const storedUser = localStorage.getItem('user');
       console.log('Stored user in localStorage:', storedUser ? 'exists' : 'not found');
@@ -232,7 +232,7 @@ function AppContent() {
             path="/admin/dashboard"
             element={
               <RequireAuth user={user} isAuth={isAuth} isVerifyingAuth={isVerifyingAuth}>
-                <AdminDashboardScreen/>
+                <AdminDashboardScreen />
               </RequireAuth>
             }
           />
@@ -260,8 +260,8 @@ function AppContent() {
 
           <Route path="/verify-email/:token" element={<VerifyTokenScreen setUser={setUser} />} />
 
-          <Route path="/reset-password/:token" element={<ResetPasswordScreen />} />
-  
+          <Route path="/reset-password" element={<ResetPasswordScreen />} />
+
 
         </Routes>
       </PageWrapper>
