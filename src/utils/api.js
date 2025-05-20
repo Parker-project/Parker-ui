@@ -133,6 +133,7 @@ export const getReports = async (userId) => {
   const endpoint = userId ? `/reports/${userId}` : '/reports';
   return apiRequest(endpoint);
 };
+
 export const getUserProfile = async () => {
   try {
     try {
