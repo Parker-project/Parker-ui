@@ -236,7 +236,7 @@
   text-transform: capitalize;
 }
 
-.status-badge.pending {
+.status-badge.reviewed {
   background: #f1c40f;
   color: #000;
   text-transform: none;
@@ -246,12 +246,12 @@
   text-transform: uppercase;
 }
 
-.status-badge.approved {
+.status-badge.resolved {
   background: #2ecc71;
   color: white;
 }
 
-.status-badge.rejected {
+.status-badge.pending {
   background: #e74c3c;
   color: white;
 }

@@ -85,7 +85,7 @@ const InspectorDashboard = () => {
           <option value="ALL">All Statuses</option>
           <option value="pending">Pending</option>
           <option value="resolved">Resolved</option>
-          <option value="rejected">Rejected</option>
+          <option value="reviewed">Reviewed</option>
         </select>
       </div>
 
@@ -148,7 +148,7 @@ const InspectorDashboard = () => {
                       >
                         <option value="pending">Pending</option>
                         <option value="resolved">Resolved</option>
-                        <option value="rejected">Rejected</option>
+                        <option value="reviewed">Reviewed</option>
                       </select>
                     )
                   ) : (
