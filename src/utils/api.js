@@ -243,8 +243,15 @@ export const getAllReports = async => {
 };
 
 
+export const getAllUsers = async => {
+  const endpoint = `/reports`;
+  return apiRequest(endpoint);
+};
+
 export const updateReportStatus = async (reportId, newStatus) => {
   const endpoint = `/reports/${reportId}/status`;
+  console.log('Updating report status:', endpoint, newStatus);
+
   const res = await apiRequest(endpoint, {
     method: 'PATCH',
     headers: {
@@ -253,7 +260,23 @@ export const updateReportStatus = async (reportId, newStatus) => {
     body: JSON.stringify({ status: newStatus }),
   });
 
-  if (!res.ok) throw new Error('Failed to update status');
+  console.log('Response from updateReportStatus:', res);
+  // res is already the parsed response (likely the updated report object or a success message)
+  return res;
+};
+
+
+export const updateUserRole = async (userId, newRole) => {
+  const endpoint = `/users/${reportId}/role`;
+  const res = await apiRequest(endpoint, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ role: newRole }),
+  });
+
+  if (!res.ok) throw new Error('Failed to update users role');
 
   return await res.json();
 }

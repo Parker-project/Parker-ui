@@ -10,12 +10,14 @@ import EmailNotVerifiedScreen from './screens/EmailNotVerifiedScreen';
 import ResendVerificationScreen from './screens/ResendVerificationScreen';
 import RequireAuth from './components/RequireAuth';
 import RequireInspector from './components/RequireInspector';
+import RequireAdmin from './components/RequireAdmin';
 import ReportDetail from './screens/ReportDetail';
 import InspectorDashboardScreen from './screens/InspectorDashboardScreen';
 import LandingPage from './screens/LandingPage';
 import MyReportsScreen from './screens/MyReportsScreen';
 import DashboardScreen from './screens/DashboardScreen';
 import InspectorMapViewScreen from './screens/InspectorMapViewScreen';
+import AdminUserDashboardScreen from './screens/AdminUserDashboardScreen';
 import { getUserProfile } from './utils/api';
 import './App.css';
 
@@ -241,6 +243,15 @@ function AppContent() {
               <RequireInspector user={user} isAuth={isAuth} isVerifyingAuth={isVerifyingAuth}>
                 <InspectorMapViewScreen user={user} />
               </RequireInspector>
+            }
+          />
+
+          <Route
+            path="/admin-all-users"
+            element={
+              <RequireAdmin user={user} isAuth={isAuth} isVerifyingAuth={isVerifyingAuth}>
+                <AdminUserDashboardScreen user={user} />
+              </RequireAdmin>
             }
           />
 

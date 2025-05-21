@@ -3,8 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { getAllReports, updateReportStatus } from '../utils/api'; 
 import './InspectorScreen.css';
 
-//
-
 const InspectorDashboard = () => {
   const [reports, setReports] = useState([]);
   const [filteredReports, setFilteredReports] = useState([]);
@@ -12,17 +10,18 @@ const InspectorDashboard = () => {
   const [error, setError] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState('ALL');
   const [editingReportId, setEditingReportId] = useState(null);
+  const [updating, setUpdating] = useState(null);
 
+  const navigate = useNavigate();
 
+  useEffect(() => {
+    fetchReports();
+  }, []);
 
   useEffect(() => {
     filterReports();
   }, [reports, selectedStatus]);
 
-  useEffect(() => {
-    fetchReports();
-  }, []);
-  
   const fetchReports = async () => {
     try {
       setLoading(true);
@@ -39,7 +38,7 @@ const InspectorDashboard = () => {
 
   const filterReports = () => {
     if (selectedStatus === 'ALL') {
-      setFilteredReports(reports);
+      setFilteredReports([...reports]);
     } else {
       setFilteredReports(reports.filter(r => r.status === selectedStatus));
     }
@@ -49,18 +48,21 @@ const InspectorDashboard = () => {
     try {
       setUpdating(reportId);
       await updateReportStatus(reportId, newStatus);
-      const updatedReports = reports.map(r =>
-        r._id === reportId ? { ...r, status: newStatus } : r
+  
+      // Update the report in `reports`
+      setReports(prevReports =>
+        prevReports.map(r =>
+          r._id === reportId ? { ...r, status: newStatus } : r
+        )
       );
-      setReports(updatedReports); // triggers re-filtering
     } catch (err) {
       console.error('Error updating report status:', err);
       alert('Failed to update status');
     } finally {
       setUpdating(null);
+      setEditingReportId(null);
     }
   };
-  
 
   const handleStatusChange = (e) => {
     setSelectedStatus(e.target.value);
@@ -70,7 +72,7 @@ const InspectorDashboard = () => {
     const lower = status.toLowerCase();
     return <span className={`status-badge ${lower}`}>{status}</span>;
   };
-  const navigate = useNavigate();
+
   return (
     <div className="page-container">
       <div className="page-header">
@@ -100,56 +102,64 @@ const InspectorDashboard = () => {
         </div>
       ) : (
         <div className="reports-list">
-          {filteredReports.map((report, index) => (
-            <div
-            className={`report-card ${editingReportId === report._id ? 'selected' : ''}`}
-            key={report._id}
-            onClick={() => setEditingReportId(report._id)}
-            style={{ cursor: 'pointer' }}
-            >
-              <div className="report-title">
-                #{index +1} — {report.description}
+          {filteredReports.map((report, index) => {
+            const fullReport = reports.find(r => r._id === report._id) || report;
+
+            return (
+              <div
+                className={`report-card ${editingReportId === report._id ? 'selected' : ''}`}
+                key={report._id}
+                onClick={() => setEditingReportId(report._id)}
+                style={{ cursor: 'pointer' }}
+              >
+                <div className="report-title">
+                  #{index + 1} — {report.description}
+                </div>
+                <div className="report-details">
+                  <strong>License plate:</strong> {report.liscensePlateNumber}
+                </div>
+                <div className="report-details">
+                  <strong>Description:</strong> {report.description}
+                </div>
+                <div className="report-details">
+                  <strong>Location:</strong> {report.location.address}
+                </div>
+                <div className="report-details">
+                  <strong>Date:</strong> {new Date(report.createdAt).toLocaleString()}
+                </div>
+                <div className="report-details">
+                  <strong>Status:</strong>{' '}
+                  {editingReportId === report._id ? (
+                    updating === report._id ? (
+                      <span>Updating...</span>
+                    ) : (
+                      <select
+                        value={reports.find(r => r._id === report._id)?.status || report.status}
+                        onChange={async (e) => {
+                          const newStatus = e.target.value;
+                          if (newStatus !== report.status) {
+                            await handleUpdateStatus(report._id, newStatus);
+                          } else {
+                            setEditingReportId(null);
+                          }
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                        autoFocus
+                      >
+                        <option value="pending">Pending</option>
+                        <option value="resolved">Resolved</option>
+                        <option value="rejected">Rejected</option>
+                      </select>
+                    )
+                  ) : (
+                    renderStatusBadge(report.status)
+                  )}
+                </div>
               </div>
-              <div className="report-details">
-                <strong>License plate:</strong> {report.liscensePlateNumber}
-              </div>
-              <div className="report-details">
-                <strong>Description:</strong> {report.description}
-              </div>
-              <div className="report-details">
-                <strong>Location:</strong> {report.location.address}
-              </div>
-              <div className="report-details">
-                <strong>Date:</strong> {new Date(report.createdAt).toLocaleString()}
-              </div>
-              <div className="report-details">
-                <strong>Status:</strong>{' '}
-                {editingReportId === report._id ? (
-                  <select
-                    value={report.status}
-                    onChange={async (e) => {
-                      const newStatus = e.target.value;
-                      if (newStatus !== report.status) {
-                        await handleUpdateStatus(report._id, newStatus);
-                      }
-                      setEditingReportId(null); // Done editing
-                    }}
-                    onClick={(e) => e.stopPropagation()} // Prevent card click while changing
-                    autoFocus
-                  >
-                    <option value="pending">Pending</option>
-                    <option value="resolved">Resolved</option>
-                    <option value="rejected">Rejected</option>
-                  </select>
-                ) : (
-                  renderStatusBadge(report.status)
-                )}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
-
     </div>
   );
 };
