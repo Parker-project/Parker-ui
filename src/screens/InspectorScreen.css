@@ -220,10 +220,12 @@
   transition: var(--transition);
 }
 
+
 .retry-btn:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 8px rgba(67, 97, 238, 0.3);
 }
+
 
 /* Status badge customization */
 .status-badge {
@@ -236,16 +238,6 @@
   text-transform: capitalize;
 }
 
-.status-badge.reviewed {
-  background: #f1c40f;
-  color: #000;
-  text-transform: none;
-}
-
-.status-badge.pending::first-letter {
-  text-transform: uppercase;
-}
-
 .status-badge.resolved {
   background: #2ecc71;
   color: white;
@@ -255,6 +247,12 @@
   background: #e74c3c;
   color: white;
 }
+
+.status-badge.reviewd {
+  background: #e29f0f;
+  color: white;
+}
+
 
 /* Responsive design */
 @media (max-width: 768px) {

@@ -69,7 +69,8 @@ const InspectorDashboard = () => {
   };
 
   const renderStatusBadge = (status) => {
-    const lower = status.toLowerCase();
+    const lower = status.trim().toLowerCase();;
+    console.log('Status:', lower);
     return <span className={`status-badge ${lower}`}>{status}</span>;
   };
 

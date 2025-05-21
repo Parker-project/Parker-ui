@@ -18,6 +18,9 @@ import MyReportsScreen from './screens/MyReportsScreen';
 import DashboardScreen from './screens/DashboardScreen';
 import InspectorMapViewScreen from './screens/InspectorMapViewScreen';
 import AdminUserDashboardScreen from './screens/AdminUserDashboardScreen';
+import AdminDashboardScreen from './screens/AdminDashboardScreen';
+import MapViewScreen from './screens/AdminMapViewScreen';
+import ResetPasswordScreen from './screens/ResetPasswordScreen';
 import { getUserProfile } from './utils/api';
 import './App.css';
 
@@ -28,7 +31,7 @@ export const handleSessionExpired = () => {
 };
 
 function AppContent() {
-  const [user, setUser] = useState(null); 
+  const [user, setUser] = useState(null);
   const [isAuth, setIsAuth] = useState(false);
   const [isVerifyingAuth, setIsVerifyingAuth] = useState(true);
   const location = useLocation();
@@ -45,7 +48,7 @@ function AppContent() {
 
     const verifyAuth = async () => {
       setIsVerifyingAuth(true);
-      
+
       // First try to get user from localStorage
       const storedUser = localStorage.getItem('user');
       console.log('Stored user in localStorage:', storedUser ? 'exists' : 'not found');
@@ -205,7 +208,7 @@ function AppContent() {
             path="/dashboard"
             element={
               <RequireAuth user={user} isAuth={isAuth} isVerifyingAuth={isVerifyingAuth}>
-                <DashboardScreen user={user} setUser={setUser} setIsAuth={setIsAuth} isAuth={isAuth} isVerifyingAuth={isVerifyingAuth}/>
+                <DashboardScreen user={user} setUser={setUser} setIsAuth={setIsAuth} />
               </RequireAuth>
             }
           />
@@ -268,6 +271,8 @@ function AppContent() {
           <Route path="*" element={<h2>404 - Page Not Found</h2>} />
 
           <Route path="/verify-email/:token" element={<VerifyTokenScreen setUser={setUser} />} />
+
+          <Route path="/reset-password" element={<ResetPasswordScreen />} />
 
 
         </Routes>
