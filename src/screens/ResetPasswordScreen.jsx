@@ -1,40 +1,66 @@
-import { useParams, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 
 export default function ResetPasswordScreen() {
-  const { token } = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
+  const searchParams = new URLSearchParams(location.search);
+  const token = searchParams.get('token');
 
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // on mount, log and check token
+  useEffect(() => {
+    console.log('Token from URL:', token);
+    if (!token) {
+      setMessage('Invalid or missing token');
+    }
+  }, [token]);
+
   const handleReset = async () => {
+    setMessage('');
+    if (!token) {
+      setMessage('Invalid or missing token');
+      return;
+    }
+    if (typeof password !== 'string') {
+      setMessage('Password must be a string');
+      return;
+    }
+    if (password.length < 6) {
+      setMessage('Password must be at least 6 characters');
+      return;
+    }
     if (password !== confirmPassword) {
       setMessage("Passwords don't match");
       return;
     }
 
     setIsSubmitting(true);
-    setMessage('');
+    console.log('Sending reset request:', { token, password });
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/reset-password`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, newPassword: password })
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/auth/reset-password`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token, password })
+        }
+      );
+      const data = await res.json();
 
-      const data = await response.json();
-
-      if (response.ok) {
+      if (res.ok) {
         setMessage('Password reset successful! Redirecting to login...');
-        setTimeout(() => navigate('/'), 2500);
+        setTimeout(() => navigate('/login'), 2500);
       } else {
         setMessage(data.message || 'Reset failed. Try again.');
       }
     } catch (err) {
+      console.error('Reset error:', err);
       setMessage('Server error. Please try again later.');
     } finally {
       setIsSubmitting(false);
@@ -72,7 +98,12 @@ export default function ResetPasswordScreen() {
       </button>
 
       {message && (
-        <p style={{ marginTop: '1rem', color: message.includes('successful') ? 'green' : 'red' }}>
+        <p
+          style={{
+            marginTop: '1rem',
+            color: message.includes('successful') ? 'green' : 'red'
+          }}
+        >
           {message}
         </p>
       )}

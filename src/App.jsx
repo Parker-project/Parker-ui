@@ -38,7 +38,11 @@ function AppContent() {
   // Verify authentication status on app load or refresh
   useEffect(() => {
     // Skip verification entirely if we're already on login page to prevent loops
-    if (location.pathname === '/login') {
+// ── with this:
+    if (
+      location.pathname === '/login' ||
+      location.pathname.startsWith('/reset-password')
+    ) {
       setIsVerifyingAuth(false);
       return;
     }
@@ -88,16 +92,28 @@ function AppContent() {
 
       // Parse stored user data
       try {
-        const userData = JSON.parse(storedUser);
-        console.log('Parsed user data:', userData);
-        setUser(userData); // Set user from localStorage first
+      // …after you parse storedUser:
+const userData = JSON.parse(storedUser);
+console.log('Parsed user data:', userData);
 
-        // Skip verification if we're already on login, signup, or verification pages
-        const currentPath = location.pathname;
-        const isPublicRoute = currentPath === '/' ||
+// ← ADD THIS LINE:
+const currentPath = location.pathname;
+
+        // ← UPDATED isPublicRoute:
+        const isPublicRoute =
+          currentPath === '/' ||
           currentPath === '/login' ||
           currentPath === '/signup' ||
-          currentPath.includes('/verify-email');
+          currentPath.includes('/verify-email') ||
+          currentPath.startsWith('/reset-password');
+
+        if (isPublicRoute) {
+          setIsAuth(true);
+          setIsVerifyingAuth(false);
+          return;
+        }
+
+
 
         if (isPublicRoute) {
           setIsAuth(true); // Temporarily set as authenticated
