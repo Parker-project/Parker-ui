@@ -322,3 +322,28 @@ html, body, #root {
     position: relative;
   }
   
+
+  .minimal-delete-btn {
+    margin-top: 12px;
+    background: none; /* No background by default */
+    border: none;
+    color: #d33;
+    font-size: 0.85rem;
+    padding: 0;
+    cursor: pointer;
+    /* Ensure no underline from the start */
+    text-decoration: none;
+    padding: 2px 4px; /* A very small padding for the background */
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out; /* Smooth transition for hover effect */
+    font-size: 1rem;
+    font-weight: 500;
+  }
+  
+  .minimal-delete-btn:hover {
+    /* No underline on hover as well */
+    text-decoration: none;
+    color: #a00;
+    /* Small background on hover */
+    background-color: rgba(255, 0, 0, 0.1); /* A subtle red background, adjust as needed */
+    border-radius: 3px; /* Slightly rounded corners for the background */
+  }

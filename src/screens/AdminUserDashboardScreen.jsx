@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getAllUsers, updateUserRole } from '../utils/api'; 
-import './InspectorScreen.css';
+import { getAllUsers, updateUserRole, deleteUser } from '../utils/api'; 
+import './AdminScreens.css';
 
 //
 
@@ -11,22 +11,25 @@ const AdminUserDashboardScreen = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedRole, setSelectedRole] = useState('ALL');
-//   const [editingReportId, setEditingReportId] = useState(null);
+  const [editingUserId, setEditingUserId] = useState(null);
+  const [updating, setUpdating] = useState(null);
 
 
 
   useEffect(() => {
-    filterReports();
+    filterUsers();
   }, [users, selectedRole]);
 
   useEffect(() => {
     fetchUsers();
+    console.log('Fetching users...', users);
   }, []);
   
   const fetchUsers = async () => {
     try {
       setLoading(true);
       const data = await getAllUsers();
+      console.log('Fetched users:', data);
       setUsers(Array.isArray(data) ? data : []);
       setError(null);
     } catch (err) {
@@ -39,14 +42,16 @@ const AdminUserDashboardScreen = () => {
 
   const filterUsers = () => {
     if (selectedRole === 'ALL') {
+        console.log('Filtering users by ALL', users);
         setFilteredUsers(users);
     } else {
         setFilteredUsers(users.filter(u => u.role === selectedRole));
     }
   };
 
-  const handleUpdateRole = async (userId, newRole) => {
+  const handleUpdateUser = async (userId, newRole) => {
     try {
+      console.log('Updating user:', userId, newRole);
       setUpdating(userId);
       await updateUserRole(userId, newRole);
       const updatedUsers = users.map(u =>
@@ -58,6 +63,24 @@ const AdminUserDashboardScreen = () => {
       alert('Failed to update status');
     } finally {
       setUpdating(null);
+      setEditingUserId(null);
+    }
+  };
+
+  const handleDeleteUser = async (userId) => {
+    const confirmed = window.confirm('Are you sure you want to delete this user?');
+    if (!confirmed) return;
+  
+    try {
+      setUpdating(userId);
+      await deleteUser(userId);
+      setUsers(users.filter(u => u._id !== userId));
+    } catch (err) {
+      console.error('Error deleting user:', err);
+      alert('Failed to delete user.');
+    } finally {
+      setUpdating(null);
+      setEditingUserId(null);
     }
   };
   
@@ -68,7 +91,7 @@ const AdminUserDashboardScreen = () => {
 
   const renderRoleBadge = (role) => {
     const lower = role.toLowerCase();
-    return <span className={`status-badge ${lower}`}>{role}</span>;
+    return <span className={`role-badge ${lower}`}>{role}</span>;
   };
   const navigate = useNavigate();
   return (
@@ -116,24 +139,43 @@ const AdminUserDashboardScreen = () => {
               <div className="report-details">
                 <strong>Role:</strong>{' '}
                 {editingUserId === user._id ? (
-                  <select
-                    value={user.role}
-                    onChange={async (e) => {
-                      const newRole = e.target.value;
-                      if (newRole !== user.role) {
-                        await handleUpdateRole(user._id, newRole);
-                      }
-                      setEditingUserId(null); // Done editing
-                    }}
-                    onClick={(e) => e.stopPropagation()} // Prevent card click while changing
-                    autoFocus
-                  >
-                    <option value="user">User</option>
-                    <option value="inspector">Inspector</option>
-                    <option value="admin">Admin</option>
-                  </select>
+                  updating === user._id ? (
+                    <span>Updating...</span>
+                  ) : (
+                    <>
+                    <select
+                      value={user.role}
+                      onChange={async (e) => {
+                        const newRole = e.target.value;
+                        if (newRole !== user.role) {
+                          await handleUpdateUser(user._id, newRole);
+                        }
+                        setEditingUserId(null);
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                      autoFocus
+                    >
+                      <option value="user">User</option>
+                      <option value="inspector">Inspector</option>
+                      <option value="admin">Admin</option>
+                    </select>
+                    
+                    {/* Delete button under all text */}
+                    <div className="user-actions">
+                      <button
+                        className="minimal-delete-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteUser(user._id);
+                        }}
+                      >
+                        Delete User
+                      </button>
+                    </div>
+                  </>
+                  )
                 ) : (
-                  renderRoleBadge(report.status)
+                  renderRoleBadge(user.role)
                 )}
               </div>
             </div>

@@ -242,11 +242,6 @@ export const getAllReports = async => {
 };
 
 
-export const getAllUsers = async => {
-  const endpoint = `/reports`;
-  return apiRequest(endpoint);
-};
-
 export const updateReportStatus = async (reportId, newStatus) => {
   const endpoint = `/reports/${reportId}/status`;
   console.log('Updating report status:', endpoint, newStatus);
@@ -266,7 +261,7 @@ export const updateReportStatus = async (reportId, newStatus) => {
 
 
 export const updateUserRole = async (userId, newRole) => {
-  const endpoint = `/users/${reportId}/role`;
+  const endpoint = `/user/${userId}/role`;
   const res = await apiRequest(endpoint, {
     method: 'PATCH',
     headers: {
@@ -275,7 +270,23 @@ export const updateUserRole = async (userId, newRole) => {
     body: JSON.stringify({ role: newRole }),
   });
 
-  if (!res.ok) throw new Error('Failed to update users role');
-
-  return await res.json();
+  // res is already parsed JSON
+  return res;
 }
+
+
+export const getAllUsers = async => {
+  const endpoint = `/user`;
+  const res = apiRequest(endpoint);
+  return res;
+};
+
+
+export const deleteUser = async (userId) => {
+  const res = await fetch(`/api/user/${userId}`, {
+    method: 'DELETE',
+  });
+  if (!res.ok) {
+    throw new Error('Failed to delete user');
+  }
+};

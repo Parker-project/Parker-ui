@@ -258,15 +258,6 @@ function AppContent() {
             }
           />
 
-          <Route
-            path="/inspector/report/:id"
-            element={
-              <RequireAuth user={user} isAuth={isAuth} isVerifyingAuth={isVerifyingAuth}>
-                <ReportDetail />
-              </RequireAuth>
-            }
-          />
-
           {/* Fallback Route */}
           <Route path="*" element={<h2>404 - Page Not Found</h2>} />
 
