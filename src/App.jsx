@@ -18,8 +18,6 @@ import MyReportsScreen from './screens/MyReportsScreen';
 import DashboardScreen from './screens/DashboardScreen';
 import InspectorMapViewScreen from './screens/InspectorMapViewScreen';
 import AdminUserDashboardScreen from './screens/AdminUserDashboardScreen';
-import AdminDashboardScreen from './screens/AdminDashboardScreen';
-import MapViewScreen from './screens/AdminMapViewScreen';
 import ResetPasswordScreen from './screens/ResetPasswordScreen';
 import { getUserProfile } from './utils/api';
 import './App.css';

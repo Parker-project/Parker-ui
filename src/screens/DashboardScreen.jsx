@@ -1,9 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FaCarAlt, FaClipboardList, FaSitemap, FaSignOutAlt } from 'react-icons/fa';
+import { FaCarAlt, FaClipboardList, FaSitemap, FaSignOutAlt, FaUserAlt } from 'react-icons/fa';
 import parkingIcon from '../assets/parking-icon.png';
 import { logout } from '../utils/api';
-import RequireInspector from "../components/RequireInspector";
 import './DashboardScreen.css';
 
 
@@ -42,7 +41,7 @@ export default function DashboardScreen({ user, setUser, setIsAuth, isAuth, isVe
   // Dashboard card configurations
   const dashboardCards = (() => {
     const isInspector = user?.role === 'inspector';
-  
+    const isAdmin = user?.role === 'admin';
     if (isInspector) {
       return [
         {
@@ -68,7 +67,40 @@ export default function DashboardScreen({ user, setUser, setIsAuth, isAuth, isVe
         }
       ];
     }
-  
+
+    else if (isAdmin) {
+      return [
+        {
+          id: 'manage-users',
+          icon: <FaUserAlt />,
+          title: 'Users Dashboard',
+          description: 'Manage and view all assigned users',
+          action: () => navigate('/admin-all-users')
+        },
+        {
+          id: 'report-violation',
+          icon: <FaCarAlt />,
+          title: 'Report Violation',
+          description: 'Submit a new parking violation report',
+          action: () => navigate('/submit-report')
+        },
+        {
+          id: 'my-reports',
+          icon: <FaClipboardList />,
+          title: 'My Reports',
+          description: 'View your submitted reports and their status',
+          action: () => navigate('/my-reports')
+        },
+        {
+          id: 'logout',
+          icon: <FaSignOutAlt />,
+          title: 'Logout',
+          description: 'Sign out of your account',
+          action: handleLogout
+        },
+      ];
+    }
+
     return [
       {
         id: 'report-violation',
