@@ -133,6 +133,7 @@ export const getReports = async (userId) => {
   const endpoint = userId ? `/reports/${userId}` : '/reports';
   return apiRequest(endpoint);
 };
+
 export const getUserProfile = async () => {
   try {
     try {
@@ -244,7 +245,6 @@ export const getAllReports = async => {
 
 export const updateReportStatus = async (reportId, newStatus) => {
   const endpoint = `/reports/${reportId}/status`;
-  console.log('Updating report status:', endpoint, newStatus);
 
   const res = await apiRequest(endpoint, {
     method: 'PATCH',
@@ -253,8 +253,6 @@ export const updateReportStatus = async (reportId, newStatus) => {
     },
     body: JSON.stringify({ status: newStatus }),
   });
-
-  console.log('Response from updateReportStatus:', res);
   // res is already the parsed response (likely the updated report object or a success message)
   return res;
 };
@@ -289,4 +287,29 @@ export const deleteUser = async (userId) => {
   if (!res.ok) {
     throw new Error('Failed to delete user');
   }
+};
+
+export const updateReportInspector = async (reportId, newInspectorId) => {
+  const endpoint = `/reports/${reportId}/assign-inspector`;
+
+  const res = await apiRequest(endpoint, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ inspectorId: newInspectorId }),
+  });
+  // res is already the parsed response (likely the updated report object or a success message)
+  return res;
+};
+
+export const getUserById = async (userId) => {
+  const endpoint = `/user/${userId}`;
+  const res = await apiRequest(endpoint);
+  return res;
+}
+
+export const getUserByRole = async (userRole) => {
+  const endpoint = `/user/${userRole}`;
+  return apiRequest(endpoint);
 };

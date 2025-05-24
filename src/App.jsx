@@ -19,6 +19,7 @@ import DashboardScreen from './screens/DashboardScreen';
 import InspectorMapViewScreen from './screens/InspectorMapViewScreen';
 import AdminUserDashboardScreen from './screens/AdminUserDashboardScreen';
 import ResetPasswordScreen from './screens/ResetPasswordScreen';
+import SuperInspectorDashboard from './screens/SuperInspectorDashboard';
 import { getUserProfile } from './utils/api';
 import './App.css';
 
@@ -253,6 +254,15 @@ function AppContent() {
               <RequireAdmin user={user} isAuth={isAuth} isVerifyingAuth={isVerifyingAuth}>
                 <AdminUserDashboardScreen user={user} />
               </RequireAdmin>
+            }
+          />
+
+          <Route
+            path="/super-inspector"
+            element={
+              <RequireInspector user={user} isAuth={isAuth} isVerifyingAuth={isVerifyingAuth}>
+                <SuperInspectorDashboard user={user} />
+              </RequireInspector>
             }
           />
 
