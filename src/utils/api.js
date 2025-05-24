@@ -313,3 +313,12 @@ export const getUserByRole = async (userRole) => {
   const endpoint = `/user/${userRole}`;
   return apiRequest(endpoint);
 };
+
+export const deleteReportById = async (reportId) => {
+  const res = await fetch(`/api/reports/${reportId}`, {
+    method: 'DELETE',
+  });
+  if (!res.ok) {
+    throw new Error('Failed to delete user');
+  }
+};

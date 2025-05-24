@@ -42,13 +42,14 @@ export default function DashboardScreen({ user, setUser, setIsAuth, isAuth, isVe
   const dashboardCards = (() => {
     const isInspector = user?.role === 'inspector';
     const isAdmin = user?.role === 'admin';
+    const isSuperInspector = user?.role === 'superInspector';
     if (isInspector) {
       return [
         {
-          id: 'inspector-dashboard',
-          icon: <FaClipboardList />,
-          title: 'Reports Dashboard',
-          description: 'Manage and view all assigned reports',
+          id: 'manage-status',
+          icon: <FaUserAlt />,
+          title: 'Update Rports Status',
+          description: 'Update the status of reports',
           action: () => navigate('/inspector-all-reports')
         },
         {
@@ -90,6 +91,32 @@ export default function DashboardScreen({ user, setUser, setIsAuth, isAuth, isVe
           title: 'My Reports',
           description: 'View your submitted reports and their status',
           action: () => navigate('/my-reports')
+        },
+        {
+          id: 'logout',
+          icon: <FaSignOutAlt />,
+          title: 'Logout',
+          description: 'Sign out of your account',
+          action: handleLogout
+        },
+      ];
+    }
+
+    else if (isSuperInspector) {
+      return [
+        {
+          id: 'report-violation',
+          icon: <FaCarAlt />,
+          title: 'Manage Reports',
+          description: 'Manage all existing reports',
+          action: () => navigate('/super-inspector')
+        },
+        {
+          id: 'report-map-view',
+          icon: <FaSitemap />,
+          title: 'Report Map View',
+          description: 'View all submitted reports on a map',
+          action: () => navigate('/inspector-map-view')
         },
         {
           id: 'logout',

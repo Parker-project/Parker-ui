@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getAllReports, getUserById, getUserByRole, updateReportInspector } from '../utils/api'; 
+import { getAllReports, getUserById, getUserByRole, updateReportInspector, deleteReportById } from '../utils/api'; 
 import './InspectorScreen.css';
 
 const SuperInspectorDashboard = () => {
@@ -49,25 +49,34 @@ const SuperInspectorDashboard = () => {
     }
   };
 
-  const handleUpdateInspector = async (reportId, newInspector) => {
+  const handleUpdateInspector = async (reportId, newInspectorId) => {
     try {
       setUpdating(reportId);
-      await updateReportInspector(reportId, newInspector);
   
-      // Update the report in `reports`
+      // 1. Update in backend
+      await updateReportInspector(reportId, newInspectorId);
+  
+      // 2. Get new inspector data
+      const user = await getUserById(newInspectorId);
+      const inspectorName = user ? `${user.firstName} ${user.lastName}` : "Unknown";
+  
+      // 3. Update the report in local state
       setReports(prevReports =>
         prevReports.map(r =>
-          r._id === reportId ? { ...r, inspectorId: newInspector } : r
+          r._id === reportId
+            ? { ...r, inspectorId: newInspectorId, inspectorName }
+            : r
         )
       );
     } catch (err) {
       console.error('Error updating report status:', err);
-      alert('Failed to update status');
+      alert('Failed to update inspector');
     } finally {
       setUpdating(null);
       setEditingReportId(null);
     }
   };
+  
 
   const handleInspectorChange = (e) => {
     setSelectedInspector(e.target.value);
@@ -75,7 +84,7 @@ const SuperInspectorDashboard = () => {
 
   const renderInspectorBadge = (status) => {
     const lower = status.trim().toLowerCase();;
-    return <span className={`status-badge ${lower}`}>{status}</span>;
+    return <span className={`status-badge`}>{status}</span>;
   };
 
   const enrichReportsWithInspectorName = async (reports) => {
@@ -103,9 +112,10 @@ const SuperInspectorDashboard = () => {
     
 
      
-    const response = await getUserById("68317920db311f42d1f43006");
-    console.log("Inspectors data:", response);
-    setInspectors([response]);
+    const response1 = await getUserById("68317920db311f42d1f43006");
+    const response2 = await getUserById("683077b2aaa9d3c33c565cf9");
+
+    setInspectors([response1, response2]);
     
 
 
@@ -116,6 +126,20 @@ const SuperInspectorDashboard = () => {
     }
     finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteReport = async (reportId) => {
+    if (!window.confirm('Are you sure you want to delete this report?')) return;
+  
+    try {
+      await deleteReportById(reportId);
+  
+      // Remove the report from state
+      setReports((prev) => prev.filter((r) => r._id !== reportId));
+    } catch (error) {
+      console.error('Error deleting report:', error);
+      alert('Failed to delete the report.');
     }
   };
 
@@ -167,23 +191,17 @@ const SuperInspectorDashboard = () => {
                   <strong>License plate:</strong> {report.liscensePlateNumber}
                 </div>
                 <div className="report-details">
-                  <strong>Description:</strong> {report.description}
-                </div>
-                <div className="report-details">
                   <strong>Location:</strong> {report.location.address}
                 </div>
                 <div className="report-details">
                   <strong>Date:</strong> {new Date(report.createdAt).toLocaleString()}
                 </div>
                 <div className="report-details">
-                  <strong>Assigned Inspector:</strong> {report.inspectorName}
-                </div>
-                <div className="report-details">
                   <strong>Status:</strong> {report.status}
                 </div>
                 
                 <div className="report-details">
-                  <strong>Assigned Inspector::</strong>{' '}
+                  <strong>Assigned Inspector:</strong>{' '}
                   {editingReportId === report._id ? (
                     updating === report._id ? (
                       <span>Updating...</span>
@@ -212,6 +230,16 @@ const SuperInspectorDashboard = () => {
                     renderInspectorBadge(report.inspectorName || 'Unassigned')
                   )}
                 </div>
+                {editingReportId === report._id && (
+                <button
+                className="minimal-delete-btn"
+                onClick={(e) => {
+                    e.stopPropagation(); // Prevent parent card click
+                    handleDeleteReport(report._id);
+                }}
+                >
+                Delete
+                </button>)}
               </div>
             );
           })}

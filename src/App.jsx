@@ -9,8 +9,6 @@ import VerifyTokenScreen from './screens/VerifyTokenScreen';
 import EmailNotVerifiedScreen from './screens/EmailNotVerifiedScreen';
 import ResendVerificationScreen from './screens/ResendVerificationScreen';
 import RequireAuth from './components/RequireAuth';
-import RequireInspector from './components/RequireInspector';
-import RequireAdmin from './components/RequireAdmin';
 import ReportDetail from './screens/ReportDetail';
 import InspectorDashboardScreen from './screens/InspectorDashboardScreen';
 import LandingPage from './screens/LandingPage';
@@ -20,6 +18,7 @@ import InspectorMapViewScreen from './screens/InspectorMapViewScreen';
 import AdminUserDashboardScreen from './screens/AdminUserDashboardScreen';
 import ResetPasswordScreen from './screens/ResetPasswordScreen';
 import SuperInspectorDashboard from './screens/SuperInspectorDashboard';
+import RequireRole from './components/RequireRole';
 import { getUserProfile } from './utils/api';
 import './App.css';
 
@@ -233,36 +232,36 @@ function AppContent() {
           <Route
             path="/inspector-all-reports"
             element={
-              <RequireInspector user={user} isAuth={isAuth} isVerifyingAuth={isVerifyingAuth}>
+              <RequireRole user={user} isAuth={isAuth} isVerifyingAuth={isVerifyingAuth} allowedRoles={['inspector', 'superInspector']}>
                 <InspectorDashboardScreen user={user} />
-              </RequireInspector>
+              </RequireRole>
             }
           />
 
           <Route
             path="/inspector-map-view"
             element={
-              <RequireInspector user={user} isAuth={isAuth} isVerifyingAuth={isVerifyingAuth}>
+              <RequireRole user={user} isAuth={isAuth} isVerifyingAuth={isVerifyingAuth} allowedRoles={['inspector', 'superInspector']}>
                 <InspectorMapViewScreen user={user} />
-              </RequireInspector>
+              </RequireRole>
             }
           />
 
           <Route
             path="/admin-all-users"
             element={
-              <RequireAdmin user={user} isAuth={isAuth} isVerifyingAuth={isVerifyingAuth}>
+              <RequireRole user={user} isAuth={isAuth} isVerifyingAuth={isVerifyingAuth} allowedRoles={['admin', 'superInspector']}>
                 <AdminUserDashboardScreen user={user} />
-              </RequireAdmin>
+              </RequireRole>
             }
           />
 
           <Route
             path="/super-inspector"
             element={
-              <RequireInspector user={user} isAuth={isAuth} isVerifyingAuth={isVerifyingAuth}>
+              <RequireRole user={user} isAuth={isAuth} isVerifyingAuth={isVerifyingAuth} allowedRoles={['superInspector']}>
                 <SuperInspectorDashboard user={user} />
-              </RequireInspector>
+              </RequireRole>
             }
           />
 
