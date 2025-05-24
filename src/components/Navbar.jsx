@@ -5,7 +5,6 @@ import {
   FaUserPlus,
   FaSignOutAlt,
   FaPlusCircle,
-  FaTools,
   FaFileAlt
 } from 'react-icons/fa';
 import { logout } from '../utils/api';
@@ -36,17 +35,22 @@ export default function Navbar({ user, setUser }) {
     { to: '/signup', icon: <FaUserPlus className="nav-icon" />, text: 'Sign Up' }
   ];
 
-  const authenticatedLinks = [
-    { to: '/submit-report', icon: <FaPlusCircle className="nav-icon" />, text: 'Submit' },
-    { to: '/my-reports', icon: <FaFileAlt className="nav-icon" />, text: 'Reports' }
-  ];
+  const authenticatedLinks = (() => {
+    const isInspector = user?.role === 'inspector';
+    const isAdmin = user?.role === 'admin';
+    const isSuperInspector = user?.role === 'superInspector';
 
-  // Only show the inspector link if the user has the role
-  const inspectorLink = {
-    to: '/inspector',
-    icon: <FaTools className="nav-icon" />,
-    text: 'Inspector'
-  };
+    if (isInspector || isSuperInspector || isAdmin) {
+      return [];
+    }
+
+    return [
+      { to: '/submit-report', icon: <FaPlusCircle className="nav-icon" />, text: 'Submit' },
+      { to: '/my-reports', icon: <FaFileAlt className="nav-icon" />, text: 'Reports' }
+    ];
+
+  })();
+
 
   const logoutAction = {
     icon: <FaSignOutAlt className="nav-icon" />,
@@ -99,7 +103,6 @@ export default function Navbar({ user, setUser }) {
         ) : (
           <>
             {authenticatedLinks.map(renderNavLink)}
-            {/* {user.role === 'inspector' && renderNavLink(inspectorLink)} */}
             {renderNavLink(logoutAction, 'logout')}
           </>
         )}

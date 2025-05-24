@@ -310,7 +310,7 @@ export const getUserById = async (userId) => {
 }
 
 export const getUserByRole = async (userRole) => {
-  const endpoint = `/user/${userRole}`;
+  const endpoint = `/user/role/${userRole}`;
   return apiRequest(endpoint);
 };
 

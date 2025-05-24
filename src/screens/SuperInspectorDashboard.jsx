@@ -107,22 +107,10 @@ const SuperInspectorDashboard = () => {
     try {
     setLoading(true);
     setError(null);
-    //   const response = await getUserByRole("inspector");
-    // setInspectors(response);
-    
-
-     
-    const response1 = await getUserById("68317920db311f42d1f43006");
-    const response2 = await getUserById("683077b2aaa9d3c33c565cf9");
-
-    setInspectors([response1, response2]);
-    
-
-
-    
+    const response = await getUserByRole("inspector");
+    setInspectors(response);
     } catch (error) {
       console.error("Error fetching inspectors:", error);
-      // Handle error (e.g., display an error message to the user)
     }
     finally {
       setLoading(false);
