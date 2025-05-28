@@ -153,9 +153,15 @@ export default function DashboardScreen({ user, setUser, setIsAuth, isAuth, isVe
     ];
   })();
 
-  const getUserFirstName = () => {
-    return user?.user?.firstName || user?.sanitizedUser?.firstName || 'User';
-  };
+    const getUserFirstName = () => {
+      return (
+        user?.firstName ||
+        user?.user?.firstName ||
+        user?.sanitizedUser?.firstName ||
+        'User'
+      );
+    };
+
 
   return (
     <div className="page-container">

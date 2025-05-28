@@ -62,12 +62,15 @@ function AppContent() {
           if (response.ok) {
             const userData = await response.json();
 
-            // Create complete user object
+            // Create complete user object with nested shape for reports checks
             const completeUserData = {
               ...userData,
               isEmailVerified: userData.isEmailVerified,
-              provider: userData.provider || 'local' // Default to 'local' if not specified
+              provider: userData.provider || 'local',    // Default to 'local'
+              user: userData,                             // nested for older code
+              sanitizedUser: userData                     // same shape for sanitized
             };
+
 
             localStorage.setItem('user', JSON.stringify(completeUserData));
             setUser(completeUserData);
@@ -112,13 +115,16 @@ function AppContent() {
           const profileData = await getUserProfile();
           console.log('Server verification successful:', profileData);
 
-          // Update user data with the complete profile data
+          // Update user data with nested shape for reports checks
           const updatedUserData = {
             ...userData,
             ...profileData,
             isEmailVerified: profileData.isEmailVerified,
-            provider: profileData.provider || 'local' // Default to 'local' if not specified
+            provider: profileData.provider || 'local',
+            user: profileData,
+            sanitizedUser: profileData
           };
+
 
           // Update localStorage with complete user data
           localStorage.setItem('user', JSON.stringify(updatedUserData));
