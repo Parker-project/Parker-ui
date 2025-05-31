@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getAllReports, updateReportStatus } from '../utils/api'; 
+import { getInspectorReports, updateReportStatus } from '../utils/api'; 
 import './InspectorScreen.css';
 
-const InspectorDashboard = () => {
+const InspectorDashboard = ({ user }) => {
   const [reports, setReports] = useState([]);
   const [filteredReports, setFilteredReports] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -25,7 +25,7 @@ const InspectorDashboard = () => {
   const fetchReports = async () => {
     try {
       setLoading(true);
-      const data = await getAllReports();
+      const data = await getInspectorReports(user);
       setReports(Array.isArray(data) ? data : []);
       setError(null);
     } catch (err) {
@@ -80,6 +80,10 @@ const InspectorDashboard = () => {
         <button className="btn back-btn" onClick={() => navigate(-1)}>⬅</button>
         <h2>Reports Dashboard</h2>
       </div>
+      <div className="welcome-banner">
+          <h3>Welcome Inspector {user.firstName}</h3>
+          <p>The following reports have been assigned to you</p>
+        </div>
 
       <div className="dashboard-button-container">
         <select className="dashboard-btn" value={selectedStatus} onChange={handleStatusChange}>

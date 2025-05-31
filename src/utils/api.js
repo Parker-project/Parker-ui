@@ -281,13 +281,11 @@ export const getAllUsers = async => {
 
 
 export const deleteUser = async (userId) => {
-  const res = await fetch(`/api/user/${userId}`, {
+  const res = await apiRequest(`/user/${userId}`, {
     method: 'DELETE',
   });
-  if (!res.ok) {
-    throw new Error('Failed to delete user');
-  }
 };
+
 
 export const updateReportInspector = async (reportId, newInspectorId) => {
   const endpoint = `/reports/${reportId}/assign-inspector`;
@@ -299,7 +297,6 @@ export const updateReportInspector = async (reportId, newInspectorId) => {
     },
     body: JSON.stringify({ inspectorId: newInspectorId }),
   });
-  // res is already the parsed response (likely the updated report object or a success message)
   return res;
 };
 
@@ -315,10 +312,19 @@ export const getUserByRole = async (userRole) => {
 };
 
 export const deleteReportById = async (reportId) => {
-  const res = await fetch(`/api/reports/${reportId}`, {
+  const endpoint = `/reports/${reportId}`;
+
+  const res = await apiRequest(endpoint, {
     method: 'DELETE',
   });
-  if (!res.ok) {
-    throw new Error('Failed to delete user');
-  }
+  return res;
+};
+
+
+export const getInspectorReports = async (user) => {
+  const endpoint = `/reports/inspector/${user.id}`;
+  const res = await apiRequest(endpoint, {
+    method: 'GET',
+  });
+  return res;
 };

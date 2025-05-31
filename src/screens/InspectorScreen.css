@@ -50,6 +50,14 @@
   text-align: center;
 }
 
+.page-header h3 {
+  font-size: 20px;
+  margin: 0;
+  color: var(--primary-color);
+  font-weight: 700;
+  text-align: center;
+}
+
 .page-header .back-btn {
   position: absolute;
   right: 0;
