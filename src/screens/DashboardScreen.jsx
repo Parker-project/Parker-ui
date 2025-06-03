@@ -79,6 +79,20 @@ export default function DashboardScreen({ user, setUser, setIsAuth, isAuth, isVe
           action: () => navigate('/admin-all-users')
         },
         {
+          id: 'report-violation',
+          icon: <FaCarAlt />,
+          title: 'Report Violation',
+          description: 'Submit a new parking violation report',
+          action: () => navigate('/submit-report')
+        },
+        {
+          id: 'my-reports',
+          icon: <FaClipboardList />,
+          title: 'My Reports',
+          description: 'View your submitted reports and their status',
+          action: () => navigate('/my-reports')
+        },
+        {
           id: 'logout',
           icon: <FaSignOutAlt />,
           title: 'Logout',
@@ -139,13 +153,15 @@ export default function DashboardScreen({ user, setUser, setIsAuth, isAuth, isVe
     ];
   })();
 
-  const getUserFirstName = () => {
-    return user?.user?.firstName || user?.sanitizedUser?.firstName || 'User';
-  };
+    const getUserFirstName = () => {
+      return (
+        user?.firstName ||
+        user?.user?.firstName ||
+        user?.sanitizedUser?.firstName ||
+        'User'
+      );
+    };
 
-  const getUserRole = () => {
-    return user?.user?.role || user?.sanitizedUser?.role || 'User';
-  };
 
   return (
     <div className="page-container">
@@ -166,7 +182,7 @@ export default function DashboardScreen({ user, setUser, setIsAuth, isAuth, isVe
         </div>
 
         <div className="welcome-banner">
-          <h3>Welcome {getUserRole()}, {getUserFirstName()}!</h3>
+          <h3>Welcome, {getUserFirstName()}!</h3>
           <p>What would you like to do today?</p>
         </div>
 
