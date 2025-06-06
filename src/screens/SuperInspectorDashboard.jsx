@@ -13,6 +13,7 @@ const SuperInspectorDashboard = () => {
   const [inspectors, setInspectors] = useState([]);
   const [updating, setUpdating] = useState(null);
   const navigate = useNavigate();
+  const [toast, setToast] = useState(null);
 
   useEffect(() => {
     fetchReports();
@@ -68,6 +69,8 @@ const SuperInspectorDashboard = () => {
             : r
         )
       );
+      setToast(`Inspector updated to ${inspectorName}`);
+      setTimeout(() => setToast(null), 6000);
     } catch (err) {
       console.error('Error updating report status:', err);
       alert('Failed to update inspector');
@@ -133,6 +136,7 @@ const SuperInspectorDashboard = () => {
 
   return (
     <div className="page-container">
+      {toast && (<div className="toast-notification">{toast}</div>)}
       <div className="page-header">
         <button className="btn back-btn" onClick={() => navigate(-1)}>⬅</button>
         <h2>Reports Dashboard</h2>

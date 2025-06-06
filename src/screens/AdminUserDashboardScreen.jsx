@@ -13,6 +13,7 @@ const AdminUserDashboardScreen = () => {
   const [selectedRole, setSelectedRole] = useState('ALL');
   const [editingUserId, setEditingUserId] = useState(null);
   const [updating, setUpdating] = useState(null);
+  const [toast, setToast] = useState(null);
 
 
 
@@ -49,7 +50,7 @@ const AdminUserDashboardScreen = () => {
     }
   };
 
-  const handleUpdateUser = async (userId, newRole) => {
+  const handleUpdateUser = async (userId, userName, newRole) => {
     try {
       console.log('Updating user:', userId, newRole);
       setUpdating(userId);
@@ -57,7 +58,9 @@ const AdminUserDashboardScreen = () => {
       const updatedUsers = users.map(u =>
         u._id === userId ? { ...u, role: newRole } : u
       );
-      setUsers(updatedUsers); // triggers re-filtering
+      setUsers(updatedUsers); 
+      setToast(`User ${userName} updated to role ${newRole}`);
+      setTimeout(() => setToast(null), 6000);
     } catch (err) {
       console.error('Error updating report status:', err);
       alert('Failed to update status');
@@ -96,6 +99,9 @@ const AdminUserDashboardScreen = () => {
   const navigate = useNavigate();
   return (
     <div className="page-container">
+
+      {toast && (<div className="toast-notification">{toast}</div>)}
+
       <div className="page-header">
         <button className="btn back-btn" onClick={() => navigate(-1)}>⬅</button>
         <h2>Users List</h2>
@@ -149,7 +155,7 @@ const AdminUserDashboardScreen = () => {
                       onChange={async (e) => {
                         const newRole = e.target.value;
                         if (newRole !== user.role) {
-                          await handleUpdateUser(user._id, newRole);
+                          await handleUpdateUser(user._id, user.firstName, newRole);
                         }
                         setEditingUserId(null);
                       }}
@@ -171,7 +177,7 @@ const AdminUserDashboardScreen = () => {
                           handleDeleteUser(user._id);
                         }}
                       >
-                        Delete User
+                        Delete
                       </button>
                     </div>
                   </>

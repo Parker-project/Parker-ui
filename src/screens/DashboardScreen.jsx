@@ -48,7 +48,7 @@ export default function DashboardScreen({ user, setUser, setIsAuth, isAuth, isVe
         {
           id: 'manage-status',
           icon: <FaUserAlt />,
-          title: 'Update Rports Status',
+          title: 'Update Reports Status',
           description: 'Update the status of reports',
           action: () => navigate('/inspector-all-reports')
         },

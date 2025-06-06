@@ -11,6 +11,7 @@ const InspectorDashboard = ({ user }) => {
   const [selectedStatus, setSelectedStatus] = useState('ALL');
   const [editingReportId, setEditingReportId] = useState(null);
   const [updating, setUpdating] = useState(null);
+  const [toast, setToast] = useState(null);
 
   const navigate = useNavigate();
 
@@ -44,7 +45,7 @@ const InspectorDashboard = ({ user }) => {
     }
   };
 
-  const handleUpdateStatus = async (reportId, newStatus) => {
+  const handleUpdateStatus = async (reportId, newStatus, index) => {
     try {
       setUpdating(reportId);
       await updateReportStatus(reportId, newStatus);
@@ -55,6 +56,8 @@ const InspectorDashboard = ({ user }) => {
           r._id === reportId ? { ...r, status: newStatus } : r
         )
       );
+      setToast(`Report ${index + 1} updated to status ${newStatus}`);
+      setTimeout(() => setToast(null), 6000);
     } catch (err) {
       console.error('Error updating report status:', err);
       alert('Failed to update status');
@@ -76,6 +79,7 @@ const InspectorDashboard = ({ user }) => {
 
   return (
     <div className="page-container">
+      {toast && (<div className="toast-notification">{toast}</div>)}
       <div className="page-header">
         <button className="btn back-btn" onClick={() => navigate(-1)}>⬅</button>
         <h2>Reports Dashboard</h2>
@@ -143,7 +147,7 @@ const InspectorDashboard = ({ user }) => {
                         onChange={async (e) => {
                           const newStatus = e.target.value;
                           if (newStatus !== report.status) {
-                            await handleUpdateStatus(report._id, newStatus);
+                            await handleUpdateStatus(report._id, newStatus, index);
                           } else {
                             setEditingReportId(null);
                           }
