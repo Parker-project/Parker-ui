@@ -79,20 +79,6 @@ export default function DashboardScreen({ user, setUser, setIsAuth, isAuth, isVe
           action: () => navigate('/admin-all-users')
         },
         {
-          id: 'report-violation',
-          icon: <FaCarAlt />,
-          title: 'Report Violation',
-          description: 'Submit a new parking violation report',
-          action: () => navigate('/submit-report')
-        },
-        {
-          id: 'my-reports',
-          icon: <FaClipboardList />,
-          title: 'My Reports',
-          description: 'View your submitted reports and their status',
-          action: () => navigate('/my-reports')
-        },
-        {
           id: 'logout',
           icon: <FaSignOutAlt />,
           title: 'Logout',
