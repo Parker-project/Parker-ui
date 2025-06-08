@@ -120,9 +120,28 @@ export const logout = async () => {
 
 export const submitReport = async (reportData) => {
   try {
+    const formData = new FormData();
+    if(reportData.userId) {
+      formData.append('userId', reportData.userId);
+    }
+
+    if(reportData.location) {
+      formData.append('location', JSON.stringify(reportData.location));
+    }
+
+    if(reportData.images) {
+      for(let i = 0; i < reportData.images.length; i++) {
+        formData.append('images', reportData.images[i]);
+      }
+    }
+
+    formData.append('liscensePlateNumber', reportData.liscensePlateNumber);
+    formData.append('description', reportData.description);
+    
+
     return apiRequest('/reports', {
       method: 'POST',
-      body: JSON.stringify(reportData),
+      body: formData,
     });
   } catch (error) {
     throw error;
