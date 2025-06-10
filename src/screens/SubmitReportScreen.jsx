@@ -2,7 +2,8 @@ import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
 import Autocomplete from 'react-google-autocomplete';
-import { FaArrowLeft, FaCheck } from 'react-icons/fa';
+import { FaArrowLeft, FaCheck, FaUpload } from 'react-icons/fa';
+import { MdCancel } from 'react-icons/md';
 import PageWrapper from '../components/PageWrapper';
 import ImageUpload from '../components/ImageUpload';
 import { submitReport, getUserProfile } from '../utils/api';
@@ -41,7 +42,8 @@ export default function SubmitReportScreen() {
     notes: '',
     location: null,
     addressInput: '',
-    image: null
+    image: null,
+    additionalImages: []
   });
   const [uiState, setUiState] = useState({
     submitted: false,
@@ -180,6 +182,11 @@ export default function SubmitReportScreen() {
     setFormData(prev => ({ ...prev, image: imageFile }));
   }, []);
 
+  const handleAdditionalImagesSelected = useCallback((e) => {
+    const files = Array.from(e.target.files);
+    setFormData(prev => ({ ...prev, additionalImages: files }));
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setUiState(prev => ({ ...prev, error: '', submitted: false }));
@@ -230,7 +237,8 @@ export default function SubmitReportScreen() {
         notes: '',
         location: null,
         addressInput: '',
-        image: null
+        image: null,
+        additionalImages: []
       });
     } catch (err) {
       setUiState(prev => ({ 
@@ -313,6 +321,63 @@ export default function SubmitReportScreen() {
               onImageSelected={handleImageSelected}
             />
             <small className="form-helper-text">Upload a photo of the car to automatically detect the license plate</small>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Additional Images</label>
+            <div className="additional-images-upload">
+              {formData.additionalImages.length === 0 ? (
+                <div className="upload-placeholder">
+                  <div className="upload-buttons">
+                    <button type="button" onClick={() => document.getElementById('additional-images-input').click()} className="upload-button">
+                      <FaUpload className="upload-icon" />
+                      <span>Upload Photos</span>
+                    </button>
+                  </div>
+                  <small>Select multiple photos to support your report</small>
+                </div>
+              ) : (
+                <div className="images-preview-container">
+                  <div className="images-grid">
+                    {formData.additionalImages.map((file, index) => (
+                      <div key={index} className="image-preview-item">
+                        <img 
+                          src={URL.createObjectURL(file)} 
+                          alt={`Additional ${index + 1}`} 
+                          className="additional-image-preview"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  <div className="additional-images-actions">
+                    <button 
+                      type="button" 
+                      className="clear-button" 
+                      onClick={() => setFormData(prev => ({ ...prev, additionalImages: [] }))}
+                    >
+                      <MdCancel /> Clear All
+                    </button>
+                    <button 
+                      type="button" 
+                      className="upload-button" 
+                      onClick={() => document.getElementById('additional-images-input').click()}
+                    >
+                      <FaUpload /> Add More
+                    </button>
+                  </div>
+                </div>
+              )}
+              <input
+                id="additional-images-input"
+                type="file"
+                multiple
+                accept="image/*"
+                onChange={handleAdditionalImagesSelected}
+                className="file-input"
+                style={{ display: 'none' }}
+              />
+            </div>
+            <small className="form-helper-text">Upload additional photos to support your report (optional)</small>
           </div>
 
           <div className="form-group">
