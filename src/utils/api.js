@@ -13,8 +13,12 @@ try {
 const getToken = () => {
   const user = localStorage.getItem('user');
   if (user) {
-    const userData = JSON.parse(user);
-    return userData.token;
+    try {
+      const parsedUser = JSON.parse(user);
+      return parsedUser.token;
+    } catch (error) {
+      return null;
+    }
   }
   return null;
 };
@@ -102,6 +106,8 @@ export const login = async (email, password, rememberMe) => {
     
     if (data.token) {
       localStorage.setItem('user', JSON.stringify(data));
+    } else {
+      localStorage.setItem('user', JSON.stringify(data));
     }
     
     return data;
@@ -120,28 +126,29 @@ export const logout = async () => {
 
 export const submitReport = async (reportData) => {
   try {
-    const formData = new FormData();
+    const payload = {};
+    
     if(reportData.userId) {
-      formData.append('userId', reportData.userId);
+      payload.userId = reportData.userId;
     }
 
     if(reportData.location) {
-      formData.append('location', JSON.stringify(reportData.location));
+      payload.location = reportData.location;
     }
 
     if(reportData.images) {
-      for(let i = 0; i < reportData.images.length; i++) {
-        formData.append('images', reportData.images[i]);
-      }
+      payload.images = reportData.images;
     }
 
-    formData.append('liscensePlateNumber', reportData.liscensePlateNumber);
-    formData.append('description', reportData.description);
-    
+    payload.liscensePlateNumber = reportData.liscensePlateNumber;
+    payload.description = reportData.description;
 
     return apiRequest('/reports', {
       method: 'POST',
-      body: formData,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
     });
   } catch (error) {
     throw error;

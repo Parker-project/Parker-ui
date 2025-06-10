@@ -5,7 +5,7 @@ import Autocomplete from 'react-google-autocomplete';
 import { FaArrowLeft, FaCheck } from 'react-icons/fa';
 import PageWrapper from '../components/PageWrapper';
 import ImageUpload from '../components/ImageUpload';
-import { submitReport } from '../utils/api';
+import { submitReport, getUserProfile } from '../utils/api';
 import './SubmitReportScreen.css';
 
 const LIBRARIES = ['places'];
@@ -209,17 +209,20 @@ export default function SubmitReportScreen() {
       return;
     }
 
-    const reportData = {
-      liscensePlateNumber: cleanedPlate,
-      description: notes,
-      location: {
-        latitude: location.lat,
-        longitude: location.lng,
-        address: location.address
-      }
-    };
-
     try {
+      const userProfile = await getUserProfile();
+
+      const reportData = {
+        userId: userProfile.id,
+        liscensePlateNumber: cleanedPlate,
+        description: notes,
+        location: {
+          latitude: location.lat,
+          longitude: location.lng,
+          address: location.address
+        }
+      };
+
       await submitReport(reportData);
       setUiState(prev => ({ ...prev, submitted: true }));
       setFormData({
