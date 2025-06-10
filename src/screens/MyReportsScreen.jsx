@@ -24,7 +24,7 @@ export default function MyReportsScreen({ user }) {
       const userId = user?.user?.id || user?.sanitizedUser?.id;
       
       const data = await getReports(userId);
-      setReports(Array.isArray(data) ? data : []);
+      setReports(Array.isArray(data) ? data.map(({location, ...report}) => ({...report, location: JSON.parse(location)})) : []);
       setError(null);
     } catch (err) {
       console.error('Error fetching reports:', err);
