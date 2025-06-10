@@ -13,8 +13,12 @@ try {
 const getToken = () => {
   const user = localStorage.getItem('user');
   if (user) {
-    const userData = JSON.parse(user);
-    return userData.token;
+    try {
+      const parsedUser = JSON.parse(user);
+      return parsedUser.token;
+    } catch (error) {
+      return null;
+    }
   }
   return null;
 };
@@ -102,6 +106,8 @@ export const login = async (email, password, rememberMe) => {
     
     if (data.token) {
       localStorage.setItem('user', JSON.stringify(data));
+    } else {
+      localStorage.setItem('user', JSON.stringify(data));
     }
     
     return data;
@@ -118,30 +124,64 @@ export const logout = async () => {
   }
 };
 
+// Convert file to base64 data URL
+const fileToDataURL = (file) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => resolve(e.target.result);
+    reader.onerror = (e) => reject(e);
+    reader.readAsDataURL(file);
+  });
+};
+
+export const storeImagesLocally = async (imageFiles) => {
+  try {
+    const storedImages = [];
+    
+    for (let i = 0; i < imageFiles.length; i++) {
+      const file = imageFiles[i];
+      const dataURL = await fileToDataURL(file);
+      const imageId = `parker_image_${Date.now()}_${i}`;
+      
+      localStorage.setItem(`image_${imageId}`, dataURL);
+      
+      storedImages.push(imageId);
+    }
+    
+    return storedImages;
+  } catch (error) {
+    console.error('Error storing images locally:', error);
+    throw new Error('Failed to store images locally');
+  }
+};
+
 export const submitReport = async (reportData) => {
   try {
-    const formData = new FormData();
+    const payload = {};
+    
     if(reportData.userId) {
-      formData.append('userId', reportData.userId);
+      payload.userId = reportData.userId;
     }
 
     if(reportData.location) {
-      formData.append('location', JSON.stringify(reportData.location));
+      payload.location = reportData.location;
     }
 
-    if(reportData.images) {
-      for(let i = 0; i < reportData.images.length; i++) {
-        formData.append('images', reportData.images[i]);
-      }
+    // Store images locally and use the IDs as paths
+    if (reportData.images && reportData.images.length > 0) {
+      const imageIds = await storeImagesLocally(reportData.images);
+      payload.images = imageIds;
     }
 
-    formData.append('liscensePlateNumber', reportData.liscensePlateNumber);
-    formData.append('description', reportData.description);
-    
+    payload.liscensePlateNumber = reportData.liscensePlateNumber;
+    payload.description = reportData.description;
 
     return apiRequest('/reports', {
       method: 'POST',
-      body: formData,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
     });
   } catch (error) {
     throw error;

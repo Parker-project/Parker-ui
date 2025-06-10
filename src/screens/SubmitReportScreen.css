@@ -319,3 +319,117 @@
     max-height: 200px;
   }
 } 
+
+/* Additional Images Upload Styling */
+.additional-images-upload {
+  border: 2px dashed #ddd;
+  border-radius: var(--border-radius);
+  background-color: #fafafa;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.additional-images-upload:hover {
+  border-color: var(--primary-color);
+  background-color: #f8f9fa;
+}
+
+.upload-placeholder {
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.upload-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.upload-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 20px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: 14px;
+  font-weight: 500;
+  min-width: 120px;
+}
+
+.upload-button:hover {
+  background-color: var(--primary-dark);
+  transform: translateY(-2px);
+}
+
+.upload-icon {
+  font-size: 18px;
+}
+
+.file-input {
+  display: none;
+}
+
+.images-preview-container {
+  padding: 20px;
+}
+
+.images-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.image-preview-item {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid #eee;
+}
+
+.additional-image-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.additional-images-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+
+.clear-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 15px;
+  background-color: #f8f9fa;
+  color: #666;
+  border: 1px solid #ddd;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: 14px;
+}
+
+.clear-button:hover {
+  background-color: #e9ecef;
+  color: #333;
+}
+
+.upload-placeholder small {
+  color: #666;
+  font-size: 14px;
+}
