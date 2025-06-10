@@ -19,10 +19,10 @@ const getToken = () => {
   return null;
 };
 
-const getHeaders = () => {
+const getHeaders = (options) => {
   const token = getToken();
   return {
-    'Content-Type': 'application/json',
+    ...(!(options.body instanceof FormData) ? { 'Content-Type': 'application/json' } : {}),
     ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
   };
 };
@@ -34,7 +34,7 @@ export const apiRequest = async (endpoint, options = {}) => {
     const response = await fetch(url, {
       ...options,
       headers: {
-        ...getHeaders(),
+        ...getHeaders(options),
         ...options.headers,
       },
       credentials: 'include',
