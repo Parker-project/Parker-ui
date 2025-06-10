@@ -218,6 +218,9 @@ export default function SubmitReportScreen() {
 
     try {
       const userProfile = await getUserProfile();
+      const allImages = [];
+      if (formData.image) allImages.push(formData.image);
+      if (formData.additionalImages) allImages.push(...formData.additionalImages);
 
       const reportData = {
         userId: userProfile.id,
@@ -227,7 +230,8 @@ export default function SubmitReportScreen() {
           latitude: location.lat,
           longitude: location.lng,
           address: location.address
-        }
+        },
+        images: allImages
       };
 
       await submitReport(reportData);

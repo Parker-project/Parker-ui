@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FaArrowLeft } from 'react-icons/fa';
 import StatusBadge from '../components/StatusBadge';
+import ReportImages from '../components/ReportImages';
 import { getReports } from '../utils/api';
 import '../App.css';
 import './MyReportsScreen.css';
@@ -162,6 +163,9 @@ export default function MyReportsScreen({ user }) {
                       </p>
                     )}
                     <StatusBadge status={report.status || 'Pending'} />
+                    {report.images && report.images.length > 0 && (
+                      <ReportImages images={report.images} />
+                    )}
                   </motion.div>
                 ))}
               </div>

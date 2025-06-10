@@ -124,6 +124,37 @@ export const logout = async () => {
   }
 };
 
+// Convert file to base64 data URL
+const fileToDataURL = (file) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => resolve(e.target.result);
+    reader.onerror = (e) => reject(e);
+    reader.readAsDataURL(file);
+  });
+};
+
+export const storeImagesLocally = async (imageFiles) => {
+  try {
+    const storedImages = [];
+    
+    for (let i = 0; i < imageFiles.length; i++) {
+      const file = imageFiles[i];
+      const dataURL = await fileToDataURL(file);
+      const imageId = `parker_image_${Date.now()}_${i}`;
+      
+      localStorage.setItem(`image_${imageId}`, dataURL);
+      
+      storedImages.push(imageId);
+    }
+    
+    return storedImages;
+  } catch (error) {
+    console.error('Error storing images locally:', error);
+    throw new Error('Failed to store images locally');
+  }
+};
+
 export const submitReport = async (reportData) => {
   try {
     const payload = {};
@@ -136,8 +167,10 @@ export const submitReport = async (reportData) => {
       payload.location = reportData.location;
     }
 
-    if(reportData.images) {
-      payload.images = reportData.images;
+    // Store images locally and use the IDs as paths
+    if (reportData.images && reportData.images.length > 0) {
+      const imageIds = await storeImagesLocally(reportData.images);
+      payload.images = imageIds;
     }
 
     payload.liscensePlateNumber = reportData.liscensePlateNumber;
