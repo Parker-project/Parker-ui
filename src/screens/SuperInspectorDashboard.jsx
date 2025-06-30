@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getAllReports, getUserById, getUserByRole, updateReportInspector, deleteReportById } from '../utils/api'; 
 import './InspectorScreen.css';
+import ReportImages from '../components/ReportImages';
 
 const SuperInspectorDashboard = () => {
   const [reports, setReports] = useState([]);
@@ -222,6 +223,9 @@ const SuperInspectorDashboard = () => {
                     renderInspectorBadge(report.inspectorName || 'Unassigned')
                   )}
                 </div>
+                {report.images && report.images.length > 0 && (
+                  <ReportImages images={report.images} />
+                )}
                 {editingReportId === report._id && (
                 <button
                 className="minimal-delete-btn"

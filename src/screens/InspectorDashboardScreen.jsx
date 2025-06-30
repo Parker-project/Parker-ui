@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getInspectorReports, updateReportStatus } from '../utils/api'; 
 import './InspectorScreen.css';
+import ReportImages from '../components/ReportImages';
 
 const InspectorDashboard = ({ user }) => {
   const [reports, setReports] = useState([]);
@@ -164,6 +165,9 @@ const InspectorDashboard = ({ user }) => {
                     renderStatusBadge(report.status)
                   )}
                 </div>
+                {report.images && report.images.length > 0 && (
+                  <ReportImages images={report.images} />
+                )}
               </div>
             );
           })}
